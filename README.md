@@ -1,4 +1,4 @@
-# 🏠 Housing Hub – Society Management Web Platform
+# 🏠 Housing Hub – Society Coordination Web Platform
 
 **Housing Hub** is a web-based platform that simplifies and automates residential society operations. It allows:
 
