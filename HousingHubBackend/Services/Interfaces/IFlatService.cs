@@ -1,0 +1,14 @@
+using System.Collections.Generic;
+using HousingHubBackend.Models;
+
+namespace HousingHubBackend.Services.Interfaces
+{
+    public interface IFlatService
+    {
+        IEnumerable<Flat> GetAll();
+        Flat GetById(int id);
+        Flat Add(Flat flat);
+        Flat Update(int id, Flat flat);
+        bool Delete(int id);
+    }
+}

@@ -1,0 +1,186 @@
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Building2, User, Mail, Phone, Lock, Home } from 'lucide-react';
+import Input from '../../components/UI/Input';
+import Button from '../../components/UI/Button';
+import { useAuth } from '../../contexts/AuthContext';
+
+const RegisterPage = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+    confirmPassword: '',
+    flatId: '',
+    societyId: ''
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { register } = useAuth();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+    if (!formData.societyId || !formData.flatId) {
+      setError('Society ID and Flat ID are required');
+      setLoading(false);
+      return;
+    }
+    // Prepare userData as per backend DTO
+    const userData = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      password: formData.password,
+      role: 'resident', // Default role for this registration page
+      societyId: parseInt(formData.societyId),
+      flatId: parseInt(formData.flatId)
+    };
+    try {
+      const success = await register(userData);
+      if (success) {
+        setError('');
+        alert('Resident registered successfully!');
+      } else {
+        setError('Registration failed. Please try again.');
+      }
+    } catch (err) {
+      setError(err.message || 'Registration failed. Please try again.');
+    }
+    setLoading(false);
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center mb-4">
+            <Building2 className="h-12 w-12 text-green-600" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900">Register Resident</h2>
+          <p className="text-gray-600 mt-2">Join your society community</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+              {error}
+            </div>
+          )}
+          <div className="relative">
+            <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              name="name"
+              type="text"
+              placeholder="Full Name"
+              value={formData.name}
+              onChange={handleChange}
+              className="pl-10"
+              required
+            />
+          </div>
+
+          <div className="relative">
+            <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              name="email"
+              type="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+              className="pl-10"
+              required
+            />
+          </div>
+
+          <div className="relative">
+            <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              name="phone"
+              type="tel"
+              placeholder="Phone Number"
+              value={formData.phone}
+              onChange={handleChange}
+              className="pl-10"
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              name="societyId"
+              type="number"
+              placeholder="Society ID"
+              value={formData.societyId}
+              onChange={handleChange}
+              required
+            />
+            <Input
+              name="flatId"
+              type="number"
+              placeholder="Flat ID"
+              value={formData.flatId}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="relative">
+            <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              name="password"
+              type="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              className="pl-10"
+              required
+            />
+          </div>
+
+          <div className="relative">
+            <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              name="confirmPassword"
+              type="password"
+              placeholder="Confirm Password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="pl-10"
+              required
+            />
+          </div>
+
+          <Button type="submit" variant="success" className="w-full" disabled={loading}>
+            {loading ? 'Registering...' : 'Register'}
+          </Button>
+        </form>
+
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-600">
+            Already have an account?{' '}
+            <Link to="/login" className="text-green-600 hover:text-green-700 font-medium">
+              Sign in here
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default RegisterPage;

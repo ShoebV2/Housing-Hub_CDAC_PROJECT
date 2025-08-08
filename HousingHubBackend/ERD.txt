@@ -1,0 +1,148 @@
+erDiagram
+  Amenity {
+    AmenityId int PK
+    SocietyId int(NULL) FK
+    Name nvarchar(100)(NULL) 
+    Description nvarchar(255)(NULL) 
+    HourlyRate float(NULL) 
+    MaxCapacity int(NULL) 
+    OpeningTime time(NULL) 
+    ClosingTime time(NULL) 
+  }
+  Amenity }o--|| Society : FK__Amenity__Society__75A278F5
+  Announcement {
+    AId int PK
+    Title nvarchar(200)(NULL) 
+    Content nvarchar(max)(NULL) 
+    CreatedAt datetime(NULL) 
+    CreatedBy int(NULL) FK
+    SocietyId int(NULL) FK
+    isGlobal bit(NULL) 
+  }
+  Announcement }o--|| UserAccount : FK__Announcem__Creat__09A971A2
+  Announcement }o--|| Society : FK__Announcem__Socie__0A9D95DB
+  AnnouncementTargetFlat {
+    ATFId int PK
+    AnnouncementId int(NULL) FK
+    FlatId int(NULL) FK
+  }
+  AnnouncementTargetFlat }o--|| Announcement : FK__Announcem__Annou__114A936A
+  AnnouncementTargetFlat }o--|| Flat : FK__Announcem__FlatI__123EB7A3
+  AnnouncementTargetWing {
+    ATWId int PK
+    AnnouncementId int(NULL) FK
+    WingId int(NULL) FK
+  }
+  AnnouncementTargetWing }o--|| Announcement : FK__Announcem__Annou__0D7A0286
+  AnnouncementTargetWing }o--|| Wing : FK__Announcem__WingI__0E6E26BF
+  Booking {
+    BookingId int PK
+    UserId int(NULL) FK
+    FlatId int(NULL) FK
+    AmenityId int(NULL) FK
+    CreatedAt date(NULL) 
+    StartDate date(NULL) 
+    EndDate date(NULL) 
+    StartTime time(NULL) 
+    EndTime time(NULL) 
+    Amount float(NULL) 
+    Paid bit(NULL) 
+    TransactionId nvarchar(100)(NULL) 
+    Status varchar(50)(NULL) 
+  }
+  Booking }o--|| Amenity : FK__Booking__Amenity__7A672E12
+  Booking }o--|| Flat : FK__Booking__FlatId__797309D9
+  Booking }o--|| UserAccount : FK__Booking__UserId__787EE5A0
+  Complaint {
+    ComplaintId int PK
+    FlatId int(NULL) FK
+    RaisedBy int(NULL) FK
+    Title nvarchar(100)(NULL) 
+    Description nvarchar(500)(NULL) 
+    Category nvarchar(50)(NULL) 
+    Status varchar(50)(NULL) 
+    CreatedAt datetime(NULL) 
+    ResolvedAt datetime(NULL) 
+  }
+  Complaint }o--|| Flat : FK__Complaint__FlatI__7E37BEF6
+  Complaint }o--|| UserAccount : FK__Complaint__Raise__7F2BE32F
+  Flat {
+    FlatId int PK
+    WingId int(NULL) FK
+    FlatNumber nvarchar(20)(NULL) 
+    FloorNumber nvarchar(20)(NULL) 
+    Area float(NULL) 
+    Status varchar(50)(NULL) 
+  }
+  Flat }o--|| Wing : FK__Flat__WingId__6383C8BA
+  MaintenanceBill {
+    MBId int PK
+    FlatId int(NULL) FK
+    Mfid int(NULL) FK
+    PeriodStart date(NULL) 
+    PeriodEnd date(NULL) 
+    DueDate date(NULL) 
+    Amount float(NULL) 
+    PaidDate date(NULL) 
+    Paid bit(NULL) 
+    TransactionId nvarchar(100)(NULL) 
+  }
+  MaintenanceBill }o--|| Flat : FK__Maintenan__FlatI__71D1E811
+  MaintenanceBill }o--|| MaintenanceFee : FK__Maintenan__Maint__72C60C4A
+  MaintenanceFee {
+    MFId int PK
+    WingId int(NULL) FK
+    RatePerSqft float(NULL) 
+    EffectiveFrom date(NULL) 
+    EffectiveTo date(NULL) 
+    is_active bit(NULL) 
+    CreatedBy int(NULL) FK
+  }
+  MaintenanceFee }o--|| UserAccount : FK__Maintenan__Creat__6EF57B66
+  MaintenanceFee }o--|| Wing : FK__Maintenan__WingI__6E01572D
+  Society {
+    SocietyId int PK
+    Name nvarchar(100) 
+    Address nvarchar(255)(NULL) 
+    State nvarchar(50)(NULL) 
+    Country nvarchar(50)(NULL) 
+    City nvarchar(50)(NULL) 
+    Pincode int(NULL) 
+    CreatedAt datetime(NULL) 
+    IsVerified bit(NULL) 
+  }
+  UserAccount {
+    UserId int PK
+    Name nvarchar(100)(NULL) 
+    Email nvarchar(100)(NULL) 
+    Phone nvarchar(20)(NULL) 
+    Password nvarchar(200)(NULL) 
+    Role varchar(50)(NULL) 
+    SocietyId int(NULL) FK
+    FlatId int(NULL) FK
+    IsVerified bit(NULL) 
+  }
+  UserAccount }o--|| Flat : FK__UserAccou__FlatI__693CA210
+  UserAccount }o--|| Society : FK__UserAccou__Socie__68487DD7
+  Visitor {
+    VisitorId int PK
+    FlatId int(NULL) FK
+    Name nvarchar(100)(NULL) 
+    VisitorType varchar(50)(NULL) 
+    Phone nvarchar(20)(NULL) 
+    VehicleNo nvarchar(50)(NULL) 
+    Purpose nvarchar(100)(NULL) 
+    EntryTime datetime(NULL) 
+    ExitTime datetime(NULL) 
+    RecordedBy int(NULL) FK
+  }
+  Visitor }o--|| Flat : FK__Visitor__FlatId__03F0984C
+  Visitor }o--|| UserAccount : FK__Visitor__Recorde__04E4BC85
+  Wing {
+    WingId int PK
+    Name nvarchar(50)(NULL) 
+    TotalFloors int(NULL) 
+    FlatsPerFloor int(NULL) 
+    SocietyId int(NULL) FK
+  }
+  Wing }o--|| Society : FK__Wing__SocietyId__60A75C0F

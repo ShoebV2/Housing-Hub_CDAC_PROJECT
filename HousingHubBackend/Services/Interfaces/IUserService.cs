@@ -1,0 +1,14 @@
+using System.Collections.Generic;
+using HousingHubBackend.Models;
+
+namespace HousingHubBackend.Services.Interfaces
+{
+    public interface IUserService
+    {
+        IEnumerable<UserAccount> GetAll();
+        UserAccount GetById(int id);
+        UserAccount Add(UserAccount user);
+        UserAccount Update(int id, UserAccount user);
+        bool Delete(int id);
+    }
+}
