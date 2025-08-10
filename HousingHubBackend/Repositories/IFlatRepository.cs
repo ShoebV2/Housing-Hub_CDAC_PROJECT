@@ -1,9 +1,0 @@
-using HousingHubBackend.Models;
-
-namespace HousingHubBackend.Repositories
-{
-    public interface IFlatRepository : IRepository<Flat>
-    {
-        // Add custom methods if needed
-    }
-}
