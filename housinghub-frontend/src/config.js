@@ -1,3 +1,0 @@
-// src/config.js
-// Backend API base URL for HousingHubBackend
-export const API_BASE_URL = "https://localhost:44371/api";
