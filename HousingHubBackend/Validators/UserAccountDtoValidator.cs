@@ -1,0 +1,66 @@
+using FluentValidation;
+using HousingHubBackend.Dtos;
+
+namespace HousingHubBackend.Validators
+{
+    public class UserAccountDtoValidator : AbstractValidator<UserAccountDto>
+    {
+        public UserAccountDtoValidator()
+        {
+            RuleFor(x => x.Name)
+                .NotEmpty().WithMessage("Name is required");
+            RuleFor(x => x.Email)
+                .NotEmpty().WithMessage("Email is required").EmailAddress();
+            RuleFor(x => x.Role)
+                .NotEmpty().WithMessage("Role is required");
+            // SocietyId and FlatId can be null, but if role is resident, SocietyId and FlatId are required
+            When(x => x.Role == "resident", () =>
+            {
+                RuleFor(x => x.SocietyId).NotNull().WithMessage("SocietyId is required for resident");
+                RuleFor(x => x.FlatId).NotNull().WithMessage("FlatId is required for resident");
+            });
+        }
+    }
+
+    public class CreateUserAccountDtoValidator : AbstractValidator<CreateUserAccountDto>
+    {
+        public CreateUserAccountDtoValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.Email).NotEmpty().EmailAddress();
+            RuleFor(x => x.Role).NotEmpty();
+            RuleFor(x => x.Password).NotEmpty();
+            When(x => x.Role == "resident", () =>
+            {
+                RuleFor(x => x.SocietyId).NotNull().WithMessage("SocietyId is required for resident");
+                RuleFor(x => x.FlatId).NotNull().WithMessage("FlatId is required for resident");
+            });
+            When(x => x.Role == "security_staff", () =>
+            {
+                RuleFor(x => x.SocietyId).NotNull().WithMessage("SocietyId is required for security_staff");
+                RuleFor(x => x.FlatId).Null().WithMessage("FlatId must not be provided for security_staff");
+            });
+            When(x => x.Role == "admin", () =>
+            {
+                RuleFor(x => x.SocietyId).NotNull().WithMessage("SocietyId is required for admin");
+                // FlatId can be provided or not for admin
+            });
+        }
+    }
+
+    public class UpdateUserAccountDtoValidator : AbstractValidator<UpdateUserAccountDto>
+    {
+        public UpdateUserAccountDtoValidator()
+        {
+            RuleFor(x => x.UserId).GreaterThan(0);
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.Email).NotEmpty().EmailAddress();
+            RuleFor(x => x.Role).NotEmpty();
+            When(x => x.Role == "resident", () =>
+            {
+                RuleFor(x => x.SocietyId).NotNull().WithMessage("SocietyId is required for resident");
+                RuleFor(x => x.FlatId).NotNull().WithMessage("FlatId is required for resident");
+            });
+        }
+    }
+}

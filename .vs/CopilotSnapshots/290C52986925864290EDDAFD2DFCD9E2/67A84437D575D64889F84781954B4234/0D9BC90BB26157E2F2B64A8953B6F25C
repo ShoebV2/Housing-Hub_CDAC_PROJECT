@@ -1,0 +1,66 @@
+﻿using AutoMapper;
+using FluentValidation;
+using HousingHubBackend.Data;
+using HousingHubBackend.Dtos;
+using HousingHubBackend.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ComplaintsController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<CreateComplaintDto> _createValidator;
+        private readonly IValidator<UpdateComplaintDto> _updateValidator;
+
+        public ComplaintsController(
+            HousingHubDBContext context,
+            IMapper mapper,
+            IValidator<CreateComplaintDto> createValidator,
+            IValidator<UpdateComplaintDto> updateValidator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "admin,security_staff,resident")]
+        public IActionResult GetAll([FromQuery] int? wingId = null)
+        {
+            var userEmail = User.FindFirst("email")?.Value ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Email == userEmail);
+            if (user == null) return Unauthorized();
+
+            var complaints = _context.Complaints
+                .Include(c => c.RaisedByNavigation)
+                .ToList();
+            var dtos = _mapper.Map<IEnumerable<ComplaintDto>>(complaints);
+            return Ok(dtos);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "admin,security_staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var userEmail = User.FindFirst("email")?.Value ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Email == userEmail);
+            if (user == null) return Unauthorized();
+            var complaint = _context.Complaints
+                .Include(c => c.RaisedByNavigation)
+                .FirstOrDefault(c => c.ComplaintId == id);
+            if (complaint == null) return NotFound();
+            return Ok(_mapper.Map<ComplaintDto>(complaint));
+        }
+
+        [HttpPost]
+        [Authorize

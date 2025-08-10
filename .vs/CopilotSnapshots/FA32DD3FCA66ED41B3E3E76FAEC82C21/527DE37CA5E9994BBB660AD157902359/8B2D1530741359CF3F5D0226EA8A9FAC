@@ -1,0 +1,78 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using System.Linq;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class BookingsController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        public BookingsController(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Super admin,admin,security staff")]
+        public IActionResult GetAll()
+        {
+            return Ok(_context.Bookings.ToList());
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Super admin,admin,security staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var booking = _context.Bookings.Find(id);
+            if (booking == null) return NotFound();
+            return Ok(booking);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Super admin,admin,security staff")]
+        public IActionResult Create([FromBody] Booking booking)
+        {
+            _context.Bookings.Add(booking);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(Get), new { id = booking.BookingId }, booking);
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Super admin,admin,security staff")]
+        public IActionResult Update(int id, [FromBody] Booking booking)
+        {
+            var existing = _context.Bookings.Find(id);
+            if (existing == null) return NotFound();
+            existing.UserId = booking.UserId;
+            existing.FlatId = booking.FlatId;
+            existing.AmenityId = booking.AmenityId;
+            existing.CreatedAt = booking.CreatedAt;
+            existing.StartDate = booking.StartDate;
+            existing.EndDate = booking.EndDate;
+            existing.StartTime = booking.StartTime;
+            existing.EndTime = booking.EndTime;
+            existing.Amount = booking.Amount;
+            existing.Paid = booking.Paid;
+            existing.TransactionId = booking.TransactionId;
+            existing.Status = booking.Status;
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Super admin,admin")]
+        public IActionResult Delete(int id)
+        {
+            var booking = _context.Bookings.Find(id);
+            if (booking == null) return NotFound();
+            _context.Bookings.Remove(booking);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

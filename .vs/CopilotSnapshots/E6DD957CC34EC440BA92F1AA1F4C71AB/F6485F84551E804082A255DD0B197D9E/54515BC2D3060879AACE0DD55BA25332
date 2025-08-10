@@ -1,0 +1,14 @@
+﻿using System.Collections.Generic;
+using HousingHubBackend.Models;
+
+namespace HousingHubBackend.Services.Interfaces
+{
+    public interface IVisitorService
+    {
+        IEnumerable<Visitor> GetAll();
+        Visitor GetById(int id);
+        Visitor Add(Visitor visitor);
+        Visitor Update(int id, Visitor visitor);
+        bool Delete(int id);
+    }
+}

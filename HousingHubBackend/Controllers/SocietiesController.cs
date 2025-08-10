@@ -1,0 +1,152 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos;
+using AutoMapper;
+using FluentValidation;
+using System.Linq;
+using System.Collections.Generic;
+using HousingHubBackend.Services.Interfaces;
+using System.IO;
+using System;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class SocietiesController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<SocietyDto> _validator;
+        private readonly IValidator<CreateSocietyDto> _createValidator;
+        private readonly IValidator<UpdateSocietyDto> _updateValidator;
+        private readonly INotificationService _notificationService;
+
+        public SocietiesController(
+            HousingHubDBContext context,
+            IMapper mapper,
+            IValidator<SocietyDto> validator,
+            IValidator<CreateSocietyDto> createValidator,
+            IValidator<UpdateSocietyDto> updateValidator,
+            INotificationService notificationService)
+        {
+            _context = context;
+            _mapper = mapper;
+            _validator = validator;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
+            _notificationService = notificationService;
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult GetAll()
+        {
+            var societies = _context.Societies.ToList();
+            var dtos = _mapper.Map<IEnumerable<SocietyDto>>(societies);
+            return Ok(dtos);
+        }
+
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        public IActionResult Get(int id)
+        {
+            var society = _context.Societies.Find(id);
+            if (society == null) return NotFound();
+            return Ok(_mapper.Map<SocietyDto>(society));
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult Create([FromBody] CreateSocietyDto dto)
+        {
+            var validation = _createValidator.Validate(dto);
+            if (!validation.IsValid)
+                return BadRequest(validation.Errors);
+            var society = _mapper.Map<Society>(dto);
+            society.CreatedAt = DateTime.UtcNow; // Set current time
+            society.IsVerified = false; // Set default value
+            _context.Societies.Add(society);
+            _context.SaveChanges();
+
+            // Find all super admins
+            var superAdmins = _context.UserAccounts.Where(u => u.Role == "super_admin" && !string.IsNullOrEmpty(u.Email)).ToList();
+            if (superAdmins.Any())
+            {
+                var details = $"<b>Society Name:</b> {society.Name}<br/>" +
+                              $"<b>Address:</b> {society.Address}<br/>" +
+                              $"<b>City:</b> {society.City}<br/>" +
+                              $"<b>State:</b> {society.State}<br/>" +
+                              $"<b>Country:</b> {society.Country}<br/>" +
+                              $"<b>Pincode:</b> {society.Pincode}<br/>" +
+                              $"<b>Created At:</b> {society.CreatedAt}<br/>";
+                // If admin details are part of the request, include them
+                if (Request.Body.CanSeek)
+                {
+                    Request.Body.Position = 0;
+                    using var reader = new StreamReader(Request.Body);
+                    var body = reader.ReadToEnd();
+                    if (body.Contains("admin"))
+                    {
+                        // Try to extract admin details from the request body
+                        // (Assume frontend sends { society: {...}, admin: {...} })
+                        var json = System.Text.Json.JsonDocument.Parse(body);
+                        if (json.RootElement.TryGetProperty("admin", out var adminElem))
+                        {
+                            details += "<br/><b>Admin Details:</b><br/>";
+                            if (adminElem.TryGetProperty("name", out var adminName))
+                                details += $"<b>Name:</b> {adminName.GetString()}<br/>";
+                            if (adminElem.TryGetProperty("email", out var adminEmail))
+                                details += $"<b>Email:</b> {adminEmail.GetString()}<br/>";
+                            if (adminElem.TryGetProperty("phone", out var adminPhone))
+                                details += $"<b>Phone:</b> {adminPhone.GetString()}<br/>";
+                        }
+                    }
+                }
+                foreach (var superAdmin in superAdmins)
+                {
+                    _notificationService.SendNotification(
+                        superAdmin.Email,
+                        "New Society Registered",
+                        $"A new society has been registered.<br/><br/>{details}"
+                    );
+                }
+            }
+
+            return CreatedAtAction(nameof(Get), new { id = society.SocietyId }, _mapper.Map<SocietyDto>(society));
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "super_admin,admin")]
+        public IActionResult Update(int id, [FromBody] UpdateSocietyDto dto)
+        {
+            if (id != dto.SocietyId)
+                return BadRequest("SocietyId in URL and body must match.");
+            var validation = _updateValidator.Validate(dto);
+            if (!validation.IsValid)
+                return BadRequest(validation.Errors);
+            var existing = _context.Societies.Find(id);
+            if (existing == null) return NotFound();
+            _mapper.Map(dto, existing);
+            // Explicitly update IsVerified if present in DTO
+            if (dto.IsVerified.HasValue)
+                existing.IsVerified = dto.IsVerified.Value;
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "super_admin,admin")]
+        public IActionResult Delete(int id)
+        {
+            var society = _context.Societies.Find(id);
+            if (society == null) return NotFound();
+            _context.Societies.Remove(society);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

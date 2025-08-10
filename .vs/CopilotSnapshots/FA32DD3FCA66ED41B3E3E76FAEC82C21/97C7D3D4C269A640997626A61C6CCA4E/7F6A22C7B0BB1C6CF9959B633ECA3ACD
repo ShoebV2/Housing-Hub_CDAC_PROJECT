@@ -1,0 +1,56 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using HousingHubBackend.Models;
+using HousingHubBackend.Services.Interfaces;
+using HousingHubBackend.Data;
+
+namespace HousingHubBackend.Services.Implementations
+{
+    public class FlatService : IFlatService
+    {
+        private readonly HousingHubDBContext _context;
+        public FlatService(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+
+        public IEnumerable<Flat> GetAll()
+        {
+            return _context.Flats.ToList();
+        }
+
+        public Flat GetById(int id)
+        {
+            return _context.Flats.Find(id);
+        }
+
+        public Flat Add(Flat flat)
+        {
+            _context.Flats.Add(flat);
+            _context.SaveChanges();
+            return flat;
+        }
+
+        public Flat Update(int id, Flat flat)
+        {
+            var existing = _context.Flats.Find(id);
+            if (existing == null) return null;
+            existing.WingId = flat.WingId;
+            existing.FlatNumber = flat.FlatNumber;
+            existing.FloorNumber = flat.FloorNumber;
+            existing.Area = flat.Area;
+            existing.Status = flat.Status;
+            _context.SaveChanges();
+            return existing;
+        }
+
+        public bool Delete(int id)
+        {
+            var flat = _context.Flats.Find(id);
+            if (flat == null) return false;
+            _context.Flats.Remove(flat);
+            _context.SaveChanges();
+            return true;
+        }
+    }
+}

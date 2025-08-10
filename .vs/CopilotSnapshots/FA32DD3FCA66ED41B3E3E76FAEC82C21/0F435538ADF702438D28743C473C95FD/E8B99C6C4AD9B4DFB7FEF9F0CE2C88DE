@@ -1,0 +1,57 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using HousingHubBackend.Models;
+using HousingHubBackend.Services.Interfaces;
+using HousingHubBackend.Data;
+
+namespace HousingHubBackend.Services.Implementations
+{
+    public class MaintenanceService : IMaintenanceService
+    {
+        private readonly HousingHubDBContext _context;
+        public MaintenanceService(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+
+        public IEnumerable<MaintenanceBill> GetAllBills()
+        {
+            return _context.MaintenanceBills.ToList();
+        }
+
+        public MaintenanceBill GetBillById(int id)
+        {
+            return _context.MaintenanceBills.Find(id);
+        }
+
+        public MaintenanceBill AddBill(MaintenanceBill bill)
+        {
+            _context.MaintenanceBills.Add(bill);
+            _context.SaveChanges();
+            return bill;
+        }
+
+        public MaintenanceBill UpdateBill(int id, MaintenanceBill bill)
+        {
+            var existing = _context.MaintenanceBills.Find(id);
+            if (existing == null) return null;
+            existing.FlatId = bill.FlatId;
+            existing.Mfid = bill.Mfid;
+            existing.Amount = bill.Amount;
+            existing.DueDate = bill.DueDate;
+            existing.Paid = bill.Paid;
+            existing.PaidDate = bill.PaidDate;
+            _context.SaveChanges();
+            return existing;
+        }
+
+        public bool DeleteBill(int id)
+        {
+            var bill = _context.MaintenanceBills.Find(id);
+            if (bill == null) return false;
+            _context.MaintenanceBills.Remove(bill);
+            _context.SaveChanges();
+            return true;
+        }
+    }
+}

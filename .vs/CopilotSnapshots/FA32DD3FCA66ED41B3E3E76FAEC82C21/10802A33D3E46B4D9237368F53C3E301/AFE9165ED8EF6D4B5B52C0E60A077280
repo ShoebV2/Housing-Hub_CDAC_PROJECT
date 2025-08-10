@@ -1,0 +1,87 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Repositories;
+using HousingHubBackend.Dtos;
+using HousingHubBackend.Models;
+using AutoMapper;
+using FluentValidation;
+using HousingHubBackend.Services.Interfaces;
+using System.Threading.Tasks;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class FlatsController : ControllerBase
+    {
+        private readonly IFlatRepository _flatRepository;
+        private readonly IMapper _mapper;
+        private readonly IValidator<CreateFlatDto> _createValidator;
+        private readonly IValidator<UpdateFlatDto> _updateValidator;
+        private readonly INotificationService _notificationService;
+
+        public FlatsController(IFlatRepository flatRepository, IMapper mapper, IValidator<CreateFlatDto> createValidator, IValidator<UpdateFlatDto> updateValidator, INotificationService notificationService)
+        {
+            _flatRepository = flatRepository;
+            _mapper = mapper;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
+            _notificationService = notificationService;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public async Task<IActionResult> GetAll()
+        {
+            var flats = await _flatRepository.GetAllAsync();
+            var dtos = _mapper.Map<IEnumerable<FlatDto>>(flats);
+            return Ok(dtos);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public async Task<IActionResult> Get(int id)
+        {
+            var flat = await _flatRepository.GetByIdAsync(id);
+            if (flat == null) return NotFound();
+            return Ok(_mapper.Map<FlatDto>(flat));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public async Task<IActionResult> Create([FromBody] CreateFlatDto dto)
+        {
+            var validation = await _createValidator.ValidateAsync(dto);
+            if (!validation.IsValid)
+                return BadRequest(validation.Errors);
+            var flat = _mapper.Map<Flat>(dto);
+            await _flatRepository.AddAsync(flat);
+            _notificationService.SendNotification("shoebaaasss@gmail.com", "Flat Created", $"Flat {flat.FlatNumber} created successfully.");
+            return CreatedAtAction(nameof(Get), new { id = flat.FlatId }, _mapper.Map<FlatDto>(flat));
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateFlatDto dto)
+        {
+            var validation = await _updateValidator.ValidateAsync(dto);
+            if (!validation.IsValid)
+                return BadRequest(validation.Errors);
+            var flat = await _flatRepository.GetByIdAsync(id);
+            if (flat == null) return NotFound();
+            _mapper.Map(dto, flat);
+            await _flatRepository.UpdateAsync(flat);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "super_admin,admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var deleted = await _flatRepository.DeleteAsync(id);
+            if (!deleted) return NotFound();
+            return NoContent();
+        }
+    }
+}

@@ -1,0 +1,41 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using HousingHubBackend.Models;
+using System.Linq;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UsersController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        public UsersController(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            return Ok(_context.UserAccounts.ToList());
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            var user = _context.UserAccounts.Find(id);
+            if (user == null) return NotFound();
+            return Ok(user);
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var user = _context.UserAccounts.Find(id);
+            if (user == null) return NotFound();
+            _context.UserAccounts.Remove(user);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

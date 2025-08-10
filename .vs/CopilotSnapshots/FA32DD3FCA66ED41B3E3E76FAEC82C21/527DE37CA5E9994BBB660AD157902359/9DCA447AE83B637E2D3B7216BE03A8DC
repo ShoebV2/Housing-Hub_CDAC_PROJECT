@@ -1,0 +1,75 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using System.Linq;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize] // Require authentication for all endpoints by default
+    public class VisitorsController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        public VisitorsController(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "super_admin,admin,security_staff")] // Only super_admin, admin, and security_staff can view all visitors
+        public IActionResult GetAll()
+        {
+            return Ok(_context.Visitors.ToList());
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")] // All roles can view a visitor
+        public IActionResult Get(int id)
+        {
+            var visitor = _context.Visitors.Find(id);
+            if (visitor == null) return NotFound();
+            return Ok(visitor);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "super_admin,admin,security_staff")] // Only super_admin, admin, and security_staff can create
+        public IActionResult Create([FromBody] Visitor visitor)
+        {
+            _context.Visitors.Add(visitor);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(Get), new { id = visitor.VisitorId }, visitor);
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff")] // Only super_admin, admin, and security_staff can update
+        public IActionResult Update(int id, [FromBody] Visitor visitor)
+        {
+            var existing = _context.Visitors.Find(id);
+            if (existing == null) return NotFound();
+            existing.FlatId = visitor.FlatId;
+            existing.Name = visitor.Name;
+            existing.VisitorType = visitor.VisitorType;
+            existing.Phone = visitor.Phone;
+            existing.VehicleNo = visitor.VehicleNo;
+            existing.Purpose = visitor.Purpose;
+            existing.EntryTime = visitor.EntryTime;
+            existing.ExitTime = visitor.ExitTime;
+            existing.RecordedBy = visitor.RecordedBy;
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "super_admin,admin")] // Only super_admin and admin can delete
+        public IActionResult Delete(int id)
+        {
+            var visitor = _context.Visitors.Find(id);
+            if (visitor == null) return NotFound();
+            _context.Visitors.Remove(visitor);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

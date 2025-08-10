@@ -1,0 +1,31 @@
+﻿// DTOs for Flat
+namespace HousingHubBackend.Dtos.Flat
+{
+    public class FlatDto
+    {
+        public int FlatId { get; set; }
+        public int? WingId { get; set; }
+        public string FlatNumber { get; set; }
+        public string FloorNumber { get; set; }
+        public double? Area { get; set; }
+        public string Status { get; set; }
+    }
+
+    public class CreateFlatDto
+    {
+        public int? WingId { get; set; }
+        public string FlatNumber { get; set; }
+        public string FloorNumber { get; set; }
+        public double? Area { get; set; }
+        public string Status { get; set; }
+    }
+
+    public class UpdateFlatDto
+    {
+        public int? WingId { get; set; }
+        public string FlatNumber { get; set; }
+        public string FloorNumber { get; set; }
+        public double? Area { get; set; }
+        public string Status { get; set; }
+    }
+}

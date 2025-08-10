@@ -1,0 +1,15 @@
+﻿using HousingHubBackend.Services.Interfaces;
+using HousingHubBackend.Data;
+
+namespace HousingHubBackend.Services.Implementations
+{
+    public class BookingService : IBookingService
+    {
+        private readonly HousingHubDBContext _context;
+        public BookingService(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+        // Implement business logic here
+    }
+}

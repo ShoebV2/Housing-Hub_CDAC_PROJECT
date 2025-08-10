@@ -1,0 +1,29 @@
+﻿using FluentValidation;
+using HousingHubBackend.Dtos.Wing;
+
+namespace HousingHubBackend.Validators
+{
+    public class WingDtoValidator : AbstractValidator<WingDto>
+    {
+        public WingDtoValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
+    }
+
+    public class CreateWingDtoValidator : AbstractValidator<CreateWingDto>
+    {
+        public CreateWingDtoValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
+    }
+
+    public class UpdateWingDtoValidator : AbstractValidator<UpdateWingDto>
+    {
+        public UpdateWingDtoValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
+    }
+}

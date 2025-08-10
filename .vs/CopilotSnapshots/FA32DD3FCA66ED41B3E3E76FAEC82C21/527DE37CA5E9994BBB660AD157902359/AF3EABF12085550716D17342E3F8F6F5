@@ -1,0 +1,50 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos.Maintenance;
+using AutoMapper;
+using FluentValidation;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class MaintenanceController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<MaintenanceBillDto> _billValidator;
+        private readonly IValidator<MaintenanceFeeDto> _feeValidator;
+        public MaintenanceController(HousingHubDBContext context, IMapper mapper, IValidator<MaintenanceBillDto> billValidator, IValidator<MaintenanceFeeDto> feeValidator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _billValidator = billValidator;
+            _feeValidator = feeValidator;
+        }
+
+        // MaintenanceBill endpoints
+        [HttpGet("bills")]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult GetAllBills()
+        {
+            var bills = _context.MaintenanceBills.ToList();
+            var dtos = _mapper.Map<IEnumerable<MaintenanceBillDto>>(bills);
+            return Ok(dtos);
+        }
+
+        [HttpGet("bills/{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult GetBill(int id)
+        {
+            var bill = _context.MaintenanceBills.Find(id);
+            if (bill == null) return NotFound();
+            return Ok(_mapper.Map<MaintenanceBillDto>(bill));
+        }
+
+        [HttpPost("bills")]
+        [Authorize

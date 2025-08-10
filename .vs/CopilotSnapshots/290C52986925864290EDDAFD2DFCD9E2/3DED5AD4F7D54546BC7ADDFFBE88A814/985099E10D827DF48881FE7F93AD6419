@@ -1,0 +1,84 @@
+﻿using AutoMapper;
+using FluentValidation;
+using HousingHubBackend.Data;
+using HousingHubBackend.Dtos;
+using HousingHubBackend.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ComplaintsController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<CreateComplaintDto> _createValidator;
+        private readonly IValidator<UpdateComplaintDto> _updateValidator;
+
+        public ComplaintsController(
+            HousingHubDBContext context,
+            IMapper mapper,
+            IValidator<CreateComplaintDto> createValidator,
+            IValidator<UpdateComplaintDto> updateValidator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult GetAll()
+        {
+            var complaints = _context.Complaints.ToList();
+            var dtos = _mapper.Map<IEnumerable<ComplaintDto>>(complaints);
+            return Ok(dtos);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var complaint = _context.Complaints.Find(id);
+            if (complaint == null) return NotFound();
+            return Ok(_mapper.Map<ComplaintDto>(complaint));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult Create([FromBody] CreateComplaintDto dto)
+        {
+            var complaint = _mapper.Map<Complaint>(dto);
+            _context.Complaints.Add(complaint);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(Get), new { id = complaint.ComplaintId }, _mapper.Map<ComplaintDto>(complaint));
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "super_admin,admin")]
+        public IActionResult Update(int id, [FromBody] UpdateComplaintDto dto)
+        {
+            var existing = _context.Complaints.Find(id);
+            if (existing == null) return NotFound();
+            _mapper.Map(dto, existing);
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "super_admin,admin")]
+        public IActionResult Delete(int id)
+        {
+            var complaint = _context.Complaints.Find(id);
+            if (complaint == null) return NotFound();
+            _context.Complaints.Remove(complaint);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

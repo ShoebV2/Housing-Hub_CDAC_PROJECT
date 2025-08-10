@@ -1,0 +1,40 @@
+namespace HousingHubBackend.Dtos
+{
+    public class UserAccountDto
+    {
+        public int UserId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
+        public int? SocietyId { get; set; }
+        public int? FlatId { get; set; }
+        public bool IsVerified { get; set; } // Add this property
+    }
+
+    // For creating a new user (no UserId)
+    public class CreateUserAccountDto
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public int? SocietyId { get; set; }
+        public int? FlatId { get; set; }
+        public bool IsVerified { get; set; } // Add this property
+    }
+
+    // For updating an existing user (UserId required)
+    public class UpdateUserAccountDto
+    {
+        public int UserId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
+        public int? SocietyId { get; set; }
+        public int? FlatId { get; set; }
+        public bool IsVerified { get; set; } // Add this property
+    }
+}

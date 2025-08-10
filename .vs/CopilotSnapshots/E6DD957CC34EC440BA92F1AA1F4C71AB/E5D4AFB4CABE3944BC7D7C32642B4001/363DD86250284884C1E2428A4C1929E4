@@ -1,0 +1,80 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos.Flat;
+using System.Linq;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class FlatsController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        public FlatsController(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Super admin,admin,security staff")]
+        public IActionResult GetAll()
+        {
+            return Ok(_context.Flats.ToList());
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Super admin,admin,security staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var flat = _context.Flats.Find(id);
+            if (flat == null) return NotFound();
+            return Ok(flat);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Super admin,admin,security staff")]
+        public IActionResult Create([FromBody] CreateFlatDto dto)
+        {
+            var flat = new Flat
+            {
+                WingId = dto.WingId,
+                FlatNumber = dto.FlatNumber,
+                FloorNumber = dto.FloorNumber,
+                Area = dto.Area,
+                Status = dto.Status
+            };
+            _context.Flats.Add(flat);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(Get), new { id = flat.FlatId }, flat);
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Super admin,admin,security staff")]
+        public IActionResult Update(int id, [FromBody] UpdateFlatDto dto)
+        {
+            var flat = _context.Flats.Find(id);
+            if (flat == null) return NotFound();
+            flat.WingId = dto.WingId;
+            flat.FlatNumber = dto.FlatNumber;
+            flat.FloorNumber = dto.FloorNumber;
+            flat.Area = dto.Area;
+            flat.Status = dto.Status;
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Super admin,admin")]
+        public IActionResult Delete(int id)
+        {
+            var flat = _context.Flats.Find(id);
+            if (flat == null) return NotFound();
+            _context.Flats.Remove(flat);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

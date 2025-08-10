@@ -1,0 +1,14 @@
+﻿// DTO for Register User
+namespace HousingHubBackend.Dtos.Auth
+{
+    public class RegisterUserDto
+    {
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string Password { get; set; }
+        public string Role { get; set; }
+        public int? SocietyId { get; set; }
+        public int? FlatId { get; set; }
+    }
+}

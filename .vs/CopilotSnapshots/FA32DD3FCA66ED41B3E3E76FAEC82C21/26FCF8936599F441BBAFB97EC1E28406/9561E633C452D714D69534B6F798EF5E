@@ -1,0 +1,96 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos;
+using AutoMapper;
+using FluentValidation;
+using System.Linq;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.SignalR;
+using HousingHubBackend.Hubs;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class BookingsController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<CreateBookingDto> _createValidator;
+        private readonly IValidator<UpdateBookingDto> _updateValidator;
+        private readonly IHubContext<NotificationHub> _hubContext;
+
+        public BookingsController(
+            HousingHubDBContext context,
+            IMapper mapper,
+            IValidator<CreateBookingDto> createValidator,
+            IValidator<UpdateBookingDto> updateValidator,
+            IHubContext<NotificationHub> hubContext)
+        {
+            _context = context;
+            _mapper = mapper;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
+            _hubContext = hubContext;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult GetAll()
+        {
+            var bookings = _context.Bookings.ToList();
+            var dtos = _mapper.Map<IEnumerable<BookingDto>>(bookings);
+            return Ok(dtos);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var booking = _context.Bookings.Find(id);
+            if (booking == null) return NotFound();
+            return Ok(_mapper.Map<BookingDto>(booking));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult Create([FromBody] CreateBookingDto dto)
+        {
+            var booking = _mapper.Map<Booking>(dto);
+            _context.Bookings.Add(booking);
+            _context.SaveChanges();
+            // Notify resident (if UserId is available)
+            if (booking.UserId != null)
+            {
+                _hubContext.Clients.User(booking.UserId.ToString()).SendAsync("ReceiveNotification", $"A new booking has been created for you. BookingId: {booking.BookingId}");
+            }
+            return CreatedAtAction(nameof(Get), new { id = booking.BookingId }, _mapper.Map<BookingDto>(booking));
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult Update(int id, [FromBody] UpdateBookingDto dto)
+        {
+            var existing = _context.Bookings.Find(id);
+            if (existing == null) return NotFound();
+
+            _mapper.Map(dto, existing);
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "super_admin,admin")]
+        public IActionResult Delete(int id)
+        {
+            var booking = _context.Bookings.Find(id);
+            if (booking == null) return NotFound();
+            _context.Bookings.Remove(booking);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

@@ -1,0 +1,15 @@
+﻿using HousingHubBackend.Services.Interfaces;
+using HousingHubBackend.Data;
+
+namespace HousingHubBackend.Services.Implementations
+{
+    public class AuthService : IAuthService
+    {
+        private readonly HousingHubDBContext _context;
+        public AuthService(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+        // Implement business logic here
+    }
+}

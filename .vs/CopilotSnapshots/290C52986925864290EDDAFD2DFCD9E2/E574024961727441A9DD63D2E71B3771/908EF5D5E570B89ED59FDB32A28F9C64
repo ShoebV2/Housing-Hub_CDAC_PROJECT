@@ -1,0 +1,42 @@
+﻿using System;
+
+namespace HousingHubBackend.Dtos
+{
+    // For reading/displaying society data
+    public class SocietyDto
+    {
+        public int SocietyId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public string State { get; set; } = string.Empty;
+        public string Country { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
+        public int? Pincode { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public bool? IsVerified { get; set; }
+    }
+
+    // For creating a new society (no SocietyId, CreatedAt, IsVerified)
+    public class CreateSocietyDto
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public string State { get; set; } = string.Empty;
+        public string Country { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
+        public int? Pincode { get; set; }
+    }
+
+    // For updating an existing society (no CreatedAt)
+    public class UpdateSocietyDto
+    {
+        public int SocietyId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public string State { get; set; } = string.Empty;
+        public string Country { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
+        public int? Pincode { get; set; }
+        public bool? IsVerified { get; set; } // Added for approve button
+    }
+}

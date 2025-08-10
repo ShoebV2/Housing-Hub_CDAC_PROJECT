@@ -1,0 +1,477 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{37B38E10-A374-4C6E-976E-021FAE8D9932}|HousingHubBackend\\HousingHubBackend.csproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghubbackend\\controllers\\societiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37B38E10-A374-4C6E-976E-021FAE8D9932}|HousingHubBackend\\HousingHubBackend.csproj|solutionrelative:housinghubbackend\\controllers\\societiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\pages\\auth\\registersocietypage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\pages\\auth\\registersocietypage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\pages\\announcementspage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\pages\\announcementspage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\components\\admin\\wingslist.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\components\\admin\\wingslist.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\pages\\adminspage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\pages\\adminspage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\components\\admin\\flatslist.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\components\\admin\\flatslist.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\app.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\app.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\components\\layout\\sidebar.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\components\\layout\\sidebar.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/housinghub.database.windows.net/HousingHubDB/shoebv2/SqlTable/dbo.Visitor.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\pages\\visitorsentrypage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}|",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\pages\\visitorsentrypage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37B38E10-A374-4C6E-976E-021FAE8D9932}|HousingHubBackend\\HousingHubBackend.csproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghubbackend\\controllers\\visitorscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37B38E10-A374-4C6E-976E-021FAE8D9932}|HousingHubBackend\\HousingHubBackend.csproj|solutionrelative:housinghubbackend\\controllers\\visitorscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\pages\\visitorslogpage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}|",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\pages\\visitorslogpage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/housinghub.database.windows.net/HousingHubDB/shoebv2/SqlTable/dbo.Booking.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37B38E10-A374-4C6E-976E-021FAE8D9932}|HousingHubBackend\\HousingHubBackend.csproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghubbackend\\controllers\\bookingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37B38E10-A374-4C6E-976E-021FAE8D9932}|HousingHubBackend\\HousingHubBackend.csproj|solutionrelative:housinghubbackend\\controllers\\bookingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/housinghub.database.windows.net/HousingHubDB/shoebv2/SqlTable/dbo.Amenity.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37B38E10-A374-4C6E-976E-021FAE8D9932}|HousingHubBackend\\HousingHubBackend.csproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghubbackend\\controllers\\amenitiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37B38E10-A374-4C6E-976E-021FAE8D9932}|HousingHubBackend\\HousingHubBackend.csproj|solutionrelative:housinghubbackend\\controllers\\amenitiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\pages\\amenitiespage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}|",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\pages\\amenitiespage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/housinghub.database.windows.net/HousingHubDB/shoebv2/SqlTable/dbo.UserAccount.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\pages\\admin\\wingsflatspage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\pages\\admin\\wingsflatspage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37B38E10-A374-4C6E-976E-021FAE8D9932}|HousingHubBackend\\HousingHubBackend.csproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghubbackend\\controllers\\flatscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37B38E10-A374-4C6E-976E-021FAE8D9932}|HousingHubBackend\\HousingHubBackend.csproj|solutionrelative:housinghubbackend\\controllers\\flatscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37B38E10-A374-4C6E-976E-021FAE8D9932}|HousingHubBackend\\HousingHubBackend.csproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghubbackend\\controllers\\wingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37B38E10-A374-4C6E-976E-021FAE8D9932}|HousingHubBackend\\HousingHubBackend.csproj|solutionrelative:housinghubbackend\\controllers\\wingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\components\\admin\\bookingstab.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}|",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\components\\admin\\bookingstab.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{37B38E10-A374-4C6E-976E-021FAE8D9932}|HousingHubBackend\\HousingHubBackend.csproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghubbackend\\dtos\\visitordto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{37B38E10-A374-4C6E-976E-021FAE8D9932}|HousingHubBackend\\HousingHubBackend.csproj|solutionrelative:housinghubbackend\\dtos\\visitordto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\components\\admin\\residentslist.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\components\\admin\\residentslist.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\components\\admin\\securitystafflist.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\components\\admin\\securitystafflist.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\components\\complaintslist.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\components\\complaintslist.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\pages\\auth\\loginpage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\pages\\auth\\loginpage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\pages\\auth\\registerpage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\pages\\auth\\registerpage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|e:\\cdac_project\\housinghub\\housing-hub_cdac_project\\housinghub-frontend\\src\\pages\\societiespage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{604A81FC-D42A-648B-20D6-C1D1D479E2C5}|housinghub-frontend\\housinghub-frontend.esproj|solutionrelative:housinghub-frontend\\src\\pages\\societiespage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SocietiesController.cs",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\HousingHubBackend\\Controllers\\SocietiesController.cs",
+              "RelativeDocumentMoniker": "HousingHubBackend\\Controllers\\SocietiesController.cs",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\HousingHubBackend\\Controllers\\SocietiesController.cs",
+              "RelativeToolTip": "HousingHubBackend\\Controllers\\SocietiesController.cs",
+              "ViewState": "AgIAAI0AAAAAAAAAAAAIwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-10T21:48:27.93Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "LoginPage.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\Auth\\LoginPage.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\pages\\Auth\\LoginPage.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\Auth\\LoginPage.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\pages\\Auth\\LoginPage.jsx",
+              "ViewState": "AgIAAGIAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T20:53:30.885Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "AnnouncementsPage.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\AnnouncementsPage.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\pages\\AnnouncementsPage.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\AnnouncementsPage.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\pages\\AnnouncementsPage.jsx",
+              "ViewState": "AgIAABQAAADYzMzMzEwtwB0AAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T08:41:07.263Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "RegisterSocietyPage.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\Auth\\RegisterSocietyPage.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\pages\\Auth\\RegisterSocietyPage.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\Auth\\RegisterSocietyPage.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\pages\\Auth\\RegisterSocietyPage.jsx",
+              "ViewState": "AgIAAI0AAACAMzMzM5MwwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T20:57:32.691Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "RegisterPage.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\Auth\\RegisterPage.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\pages\\Auth\\RegisterPage.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\Auth\\RegisterPage.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\pages\\Auth\\RegisterPage.jsx",
+              "ViewState": "AgIAABABAAAAAAAAAIBJwAEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T20:54:13.17Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "SocietiesPage.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\SocietiesPage.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\pages\\SocietiesPage.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\SocietiesPage.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\pages\\SocietiesPage.jsx",
+              "ViewState": "AgIAAOgAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T20:59:12.15Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "WingsList.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\components\\Admin\\WingsList.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\components\\Admin\\WingsList.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\components\\Admin\\WingsList.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\components\\Admin\\WingsList.jsx",
+              "ViewState": "AgIAAL8AAAAAAAAAAAAvwNAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T20:14:15.567Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AdminsPage.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\AdminsPage.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\pages\\AdminsPage.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\AdminsPage.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\pages\\AdminsPage.jsx",
+              "ViewState": "AgIAAPcAAAAAAAAAAIBJwPkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T20:01:32.237Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "ResidentsList.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\components\\Admin\\ResidentsList.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\components\\Admin\\ResidentsList.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\components\\Admin\\ResidentsList.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\components\\Admin\\ResidentsList.jsx",
+              "ViewState": "AgIAAEgBAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T20:38:18.359Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "ComplaintsList.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\components\\ComplaintsList.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\components\\ComplaintsList.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\components\\ComplaintsList.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\components\\ComplaintsList.jsx",
+              "ViewState": "AgIAAAcBAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T20:41:36.345Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "SecurityStaffList.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\components\\Admin\\SecurityStaffList.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\components\\Admin\\SecurityStaffList.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\components\\Admin\\SecurityStaffList.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\components\\Admin\\SecurityStaffList.jsx",
+              "ViewState": "AgIAANAAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T20:38:53.305Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "FlatsList.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\components\\Admin\\FlatsList.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\components\\Admin\\FlatsList.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\components\\Admin\\FlatsList.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\components\\Admin\\FlatsList.jsx",
+              "ViewState": "AgIAAKQAAAAAAAAAAAAvwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T20:18:34.378Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "dbo.Visitor.sql",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/housinghub.database.windows.net/HousingHubDB/shoebv2/SqlTable/dbo.Visitor.sql",
+              "ToolTip": "ViewDataWindow_MSSQL__/housinghub.database.windows.net/HousingHubDB/shoebv2/SqlTable/dbo.Visitor.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-08-10T18:14:54.034Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "VisitorsEntryPage.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\VisitorsEntryPage.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\pages\\VisitorsEntryPage.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\VisitorsEntryPage.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\pages\\VisitorsEntryPage.jsx",
+              "ViewState": "AgIAAMcAAABAAAAAAIAWwNIAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T17:18:30.164Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "App.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\App.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\App.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\App.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\App.jsx",
+              "ViewState": "AgIAAEUAAAAAAAAAAIAwwE8AAAB7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T08:57:50.781Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Sidebar.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\components\\Layout\\Sidebar.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\components\\Layout\\Sidebar.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\components\\Layout\\Sidebar.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\components\\Layout\\Sidebar.jsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T19:38:28.995Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "VisitorsController.cs",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\HousingHubBackend\\Controllers\\VisitorsController.cs",
+              "RelativeDocumentMoniker": "HousingHubBackend\\Controllers\\VisitorsController.cs",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\HousingHubBackend\\Controllers\\VisitorsController.cs",
+              "RelativeToolTip": "HousingHubBackend\\Controllers\\VisitorsController.cs",
+              "ViewState": "AgIAAJ4AAAAAAAAAAAAywAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-10T18:05:15.435Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "VisitorDto.cs",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\HousingHubBackend\\Dtos\\VisitorDto.cs",
+              "RelativeDocumentMoniker": "HousingHubBackend\\Dtos\\VisitorDto.cs",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\HousingHubBackend\\Dtos\\VisitorDto.cs",
+              "RelativeToolTip": "HousingHubBackend\\Dtos\\VisitorDto.cs",
+              "ViewState": "AgIAACoAAAAAAAAAAEBUwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-10T18:53:29.695Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "VisitorsLogPage.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\VisitorsLogPage.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\pages\\VisitorsLogPage.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\VisitorsLogPage.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\pages\\VisitorsLogPage.jsx",
+              "ViewState": "AgIAAE0AAAAAAAAAAAAtwEsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T17:36:52.453Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "dbo.Booking.sql",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/housinghub.database.windows.net/HousingHubDB/shoebv2/SqlTable/dbo.Booking.sql",
+              "ToolTip": "ViewDataWindow_MSSQL__/housinghub.database.windows.net/HousingHubDB/shoebv2/SqlTable/dbo.Booking.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-08-10T16:23:30.558Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "BookingsController.cs",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\HousingHubBackend\\Controllers\\BookingsController.cs",
+              "RelativeDocumentMoniker": "HousingHubBackend\\Controllers\\BookingsController.cs",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\HousingHubBackend\\Controllers\\BookingsController.cs",
+              "RelativeToolTip": "HousingHubBackend\\Controllers\\BookingsController.cs",
+              "ViewState": "AgIAAJgAAAAAAAAAAAAuwKcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-10T09:13:18.238Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "dbo.Amenity.sql",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/housinghub.database.windows.net/HousingHubDB/shoebv2/SqlTable/dbo.Amenity.sql",
+              "ToolTip": "ViewDataWindow_MSSQL__/housinghub.database.windows.net/HousingHubDB/shoebv2/SqlTable/dbo.Amenity.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-08-10T11:14:28.775Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "AmenitiesPage.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\AmenitiesPage.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\pages\\AmenitiesPage.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\AmenitiesPage.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\pages\\AmenitiesPage.jsx",
+              "ViewState": "AgIAACsCAAAAAAAAAABBwNAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T08:53:42.774Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "AmenitiesController.cs",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\HousingHubBackend\\Controllers\\AmenitiesController.cs",
+              "RelativeDocumentMoniker": "HousingHubBackend\\Controllers\\AmenitiesController.cs",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\HousingHubBackend\\Controllers\\AmenitiesController.cs",
+              "RelativeToolTip": "HousingHubBackend\\Controllers\\AmenitiesController.cs",
+              "ViewState": "AgIAAA8AAABgzczMzIw9wFQAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-10T09:07:21.786Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "dbo.UserAccount.sql",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/housinghub.database.windows.net/HousingHubDB/shoebv2/SqlTable/dbo.UserAccount.sql",
+              "ToolTip": "ViewDataWindow_MSSQL__/housinghub.database.windows.net/HousingHubDB/shoebv2/SqlTable/dbo.UserAccount.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-08-10T11:50:56.624Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "WingsFlatsPage.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\Admin\\WingsFlatsPage.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\pages\\Admin\\WingsFlatsPage.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\pages\\Admin\\WingsFlatsPage.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\pages\\Admin\\WingsFlatsPage.jsx",
+              "ViewState": "AgIAABYAAAAAAAAAAAAAACgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T09:24:10.441Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "BookingsTab.jsx",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\components\\Admin\\BookingsTab.jsx",
+              "RelativeDocumentMoniker": "housinghub-frontend\\src\\components\\Admin\\BookingsTab.jsx",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\housinghub-frontend\\src\\components\\Admin\\BookingsTab.jsx",
+              "RelativeToolTip": "housinghub-frontend\\src\\components\\Admin\\BookingsTab.jsx",
+              "ViewState": "AgIAAJMAAAAAAAAAAIBJwJUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-08-10T09:36:46.176Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "FlatsController.cs",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\HousingHubBackend\\Controllers\\FlatsController.cs",
+              "RelativeDocumentMoniker": "HousingHubBackend\\Controllers\\FlatsController.cs",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\HousingHubBackend\\Controllers\\FlatsController.cs",
+              "RelativeToolTip": "HousingHubBackend\\Controllers\\FlatsController.cs",
+              "ViewState": "AgIAAHAAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-10T08:37:10.77Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "WingsController.cs",
+              "DocumentMoniker": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\HousingHubBackend\\Controllers\\WingsController.cs",
+              "RelativeDocumentMoniker": "HousingHubBackend\\Controllers\\WingsController.cs",
+              "ToolTip": "E:\\CDAC_Project\\HousingHub\\Housing-Hub_CDAC_PROJECT\\HousingHubBackend\\Controllers\\WingsController.cs",
+              "RelativeToolTip": "HousingHubBackend\\Controllers\\WingsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-10T08:37:10.868Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

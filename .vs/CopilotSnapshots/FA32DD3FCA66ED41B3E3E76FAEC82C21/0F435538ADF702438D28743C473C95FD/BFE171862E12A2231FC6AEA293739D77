@@ -1,0 +1,22 @@
+﻿{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=housinghub.database.windows.net;Initial Catalog=HousingHubDB;Persist Security Info=True;User ID=shoebv2;Password=AAaa@9876;Encrypt=True;Trust Server Certificate=True"
+  },
+  "Jwt": {
+    "Key": "YourSuperSecretKey1234567890!@#$%^&*()_+12",
+    "Issuer": "https://localhost:44371/", //Frontend IP address or Domain name
+    "Audience": "https://localhost:44371", //Backend Domain name
+    "ExpireMinutes": 60
+  },
+  "Smtp": {
+    "Host": "smtp.gmail.com",
+    "Port": 587,
+    "Username": "skshoebsk2@gmail.com",
+    "Password": "isaacwyhlynlnzfg"
+  }

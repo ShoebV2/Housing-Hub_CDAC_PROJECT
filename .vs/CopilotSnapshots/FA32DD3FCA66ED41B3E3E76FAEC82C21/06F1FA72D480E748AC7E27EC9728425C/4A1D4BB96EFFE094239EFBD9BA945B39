@@ -1,0 +1,59 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using HousingHubBackend.Models;
+using HousingHubBackend.Services.Interfaces;
+using HousingHubBackend.Data;
+
+namespace HousingHubBackend.Services.Implementations
+{
+    public class SocietyService : ISocietyService
+    {
+        private readonly HousingHubDBContext _context;
+        public SocietyService(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+
+        public IEnumerable<Society> GetAll()
+        {
+            return _context.Societies.ToList();
+        }
+
+        public Society GetById(int id)
+        {
+            return _context.Societies.Find(id);
+        }
+
+        public Society Add(Society society)
+        {
+            _context.Societies.Add(society);
+            _context.SaveChanges();
+            return society;
+        }
+
+        public Society Update(int id, Society society)
+        {
+            var existing = _context.Societies.Find(id);
+            if (existing == null) return null;
+            existing.Name = society.Name;
+            existing.Address = society.Address;
+            existing.State = society.State;
+            existing.Country = society.Country;
+            existing.City = society.City;
+            existing.Pincode = society.Pincode;
+            existing.CreatedAt = society.CreatedAt;
+            existing.IsVerified = society.IsVerified;
+            _context.SaveChanges();
+            return existing;
+        }
+
+        public bool Delete(int id)
+        {
+            var society = _context.Societies.Find(id);
+            if (society == null) return false;
+            _context.Societies.Remove(society);
+            _context.SaveChanges();
+            return true;
+        }
+    }
+}

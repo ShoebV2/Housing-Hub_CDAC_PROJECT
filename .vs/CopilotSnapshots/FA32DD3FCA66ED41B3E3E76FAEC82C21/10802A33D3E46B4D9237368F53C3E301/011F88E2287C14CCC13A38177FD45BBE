@@ -1,0 +1,32 @@
+﻿using FluentValidation;
+using HousingHubBackend.Dtos.Amenity;
+
+namespace HousingHubBackend.Validators
+{
+    public class AmenityDtoValidator : AbstractValidator<AmenityDto>
+    {
+        public AmenityDtoValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.Description).NotEmpty();
+        }
+    }
+
+    public class CreateAmenityDtoValidator : AbstractValidator<CreateAmenityDto>
+    {
+        public CreateAmenityDtoValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.Description).NotEmpty();
+        }
+    }
+
+    public class UpdateAmenityDtoValidator : AbstractValidator<UpdateAmenityDto>
+    {
+        public UpdateAmenityDtoValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.Description).NotEmpty();
+        }
+    }
+}

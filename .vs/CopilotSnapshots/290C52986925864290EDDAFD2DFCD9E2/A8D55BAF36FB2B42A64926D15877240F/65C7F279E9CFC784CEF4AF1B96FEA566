@@ -1,0 +1,185 @@
+﻿import React, { useEffect, useState } from 'react';
+import { API_BASE_URL } from '../config';
+import { useAuth } from '../contexts/AuthContext';
+import Button from '../components/UI/Button';
+import Input from '../components/UI/Input';
+
+const emptyForm = {
+  title: '',
+  content: '',
+  targetWingId: '',
+  targetFlatId: ''
+};
+
+const AnnouncementsPage = () => {
+  const { user } = useAuth();
+  const [announcements, setAnnouncements] = useState([]);
+  const [wings, setWings] = useState([]);
+  const [flats, setFlats] = useState([]);
+  const [form, setForm] = useState(emptyForm);
+  const [editingId, setEditingId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  if (user?.role !== 'admin') return <div>Access Denied</div>;
+
+  const getAuthHeaders = () => ({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('token')}`
+  });
+
+  const fetchAnnouncements = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/announcements`, { headers: getAuthHeaders() });
+      if (!res.ok) throw new Error('Failed to load announcements');
+      setAnnouncements(await res.json());
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const fetchWings = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/wings`, { headers: getAuthHeaders() });
+      if (!res.ok) throw new Error('Failed to load wings');
+      const data = await res.json();
+      setWings(data.filter(w => w.societyId === user.societyId));
+    } catch {
+      setWings([]);
+    }
+  };
+
+  const fetchFlats = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/flats`, { headers: getAuthHeaders() });
+      if (!res.ok) throw new Error('Failed to load flats');
+      const data = await res.json();
+      setFlats(data.filter(f => f.wing && f.wing.societyId === user.societyId));
+    } catch {
+      setFlats([]);
+    }
+  };
+
+  useEffect(() => { fetchAnnouncements(); fetchWings(); fetchFlats(); }, []);
+
+  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      const payload = {
+        title: form.title,
+        content: form.content, // use 'content' for backend
+        targetWingId: form.targetWingId || null,
+        targetFlatId: form.targetFlatId || null
+      };
+      let url = `${API_BASE_URL}/announcements`;
+      let method = 'POST';
+      if (editingId) {
+        url = `${API_BASE_URL}/announcements/${editingId}`;
+        method = 'PUT';
+        payload.aid = editingId;
+      }
+      const res = await fetch(url, {
+        method,
+        headers: getAuthHeaders(),
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Failed to save announcement');
+      setForm(emptyForm);
+      setEditingId(null);
+      fetchAnnouncements();
+    } catch {
+      setError('Failed to save announcement');
+    }
+    setLoading(false);
+  };
+
+  const handleEdit = announcement => {
+    setForm({
+      title: announcement.title,
+      content: announcement.content || '',
+      targetWingId: announcement.targetWingId || '',
+      targetFlatId: announcement.targetFlatId || ''
+    });
+    setEditingId(announcement.aid);
+  };
+
+  const handleDelete = async id => {
+    if (!window.confirm('Delete this announcement?')) return;
+    setLoading(true);
+    try {
+      await fetch(`${API_BASE_URL}/announcements/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      fetchAnnouncements();
+    } catch {
+      setError('Failed to delete announcement');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="max-w-5xl mx-auto py-8 px-4">
+      <h1 className="text-2xl font-bold mb-6">Announcements Management</h1>
+      <div className="bg-white rounded-lg shadow p-6">
+        <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 mb-4 items-end">
+          <Input name="title" value={form.title} onChange={handleChange} placeholder="Title" required />
+          <Input name="content" value={form.content} onChange={handleChange} placeholder="Message" required />
+          <select name="targetWingId" value={form.targetWingId} onChange={handleChange} className="border rounded px-2 py-1">
+            <option value="">All Wings</option>
+            {wings.map(w => (
+              <option key={w.wingId} value={w.wingId}>{w.name}</option>
+            ))}
+          </select>
+          <select name="targetFlatId" value={form.targetFlatId} onChange={handleChange} className="border rounded px-2 py-1">
+            <option value="">All Flats</option>
+            {flats.map(f => (
+              <option key={f.flatId} value={f.flatId}>{f.flatNumber}</option>
+            ))}
+          </select>
+          <Button type="submit" variant="primary" disabled={loading}>{editingId ? 'Update' : 'Add'}</Button>
+          {editingId && (
+            <Button type="button" variant="secondary" onClick={() => { setEditingId(null); setForm(emptyForm); }}>Cancel</Button>
+          )}
+        </form>
+        {error && <div className="text-red-600 mb-2">{error}</div>}
+        <div className="overflow-x-auto">
+          <table className="min-w-full border text-sm">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="px-4 py-2 border">Title</th>
+                <th className="px-4 py-2 border">Message</th>
+                <th className="px-4 py-2 border">Wing</th>
+                <th className="px-4 py-2 border">Flat</th>
+                <th className="px-4 py-2 border">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {announcements.map(a => (
+                <tr key={a.aid}>
+                  <td className="border px-4 py-2">{a.title}</td>
+                  <td className="border px-4 py-2">{a.content}</td>
+                  <td className="border px-4 py-2">{wings.find(w => w.wingId === a.targetWingId)?.name || 'All Wings'}</td>
+                  <td className="border px-4 py-2">{flats.find(f => f.flatId === a.targetFlatId)?.flatNumber || 'All Flats'}</td>
+                  <td className="border px-4 py-2 space-x-2">
+                    <Button type="button" variant="secondary" onClick={() => handleEdit(a)} size="sm">Edit</Button>
+                    <Button type="button" variant="danger" onClick={() => handleDelete(a.aid)} size="sm">Delete</Button>
+                  </td>
+                </tr>
+              ))}
+              {announcements.length === 0 && (
+                <tr><td colSpan={5} className="text-center py-4">No announcements found.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AnnouncementsPage;

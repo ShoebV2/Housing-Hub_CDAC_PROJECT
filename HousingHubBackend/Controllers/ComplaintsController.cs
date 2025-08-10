@@ -1,0 +1,152 @@
+using AutoMapper;
+using FluentValidation;
+using HousingHubBackend.Data;
+using HousingHubBackend.Dtos;
+using HousingHubBackend.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System;
+using System.Globalization;
+
+namespace HousingHubBackend.Controllers
+{
+    public class UpdateComplaintStatusDto
+    {
+        public string Status { get; set; }
+    }
+
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ComplaintsController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<CreateComplaintDto> _createValidator;
+        private readonly IValidator<UpdateComplaintDto> _updateValidator;
+
+        public ComplaintsController(
+            HousingHubDBContext context,
+            IMapper mapper,
+            IValidator<CreateComplaintDto> createValidator,
+            IValidator<UpdateComplaintDto> updateValidator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "admin,security_staff,resident")]
+        public IActionResult GetAll([FromQuery] int? wingId = null)
+        {
+            var userEmail = User.FindFirst("email")?.Value ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Email == userEmail);
+            if (user == null) return Unauthorized();
+
+            var flatsQuery = _context.Flats.Where(f => f.Wing != null && f.Wing.SocietyId == user.SocietyId);
+            if (user.Role == "admin" && wingId.HasValue)
+            {
+                flatsQuery = flatsQuery.Where(f => f.WingId == wingId.Value);
+            }
+            var flats = flatsQuery.Select(f => f.FlatId).ToList();
+            var complaintsFiltered = _context.Complaints
+                .Include(c => c.RaisedByNavigation)
+                .Where(c => flats.Contains(c.FlatId ?? 0)).ToList();
+            var dtosFiltered = _mapper.Map<IEnumerable<ComplaintDto>>(complaintsFiltered);
+            // Format dates to Indian time and dd/MM/yyyy
+            var indiaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+            foreach (var dto in dtosFiltered)
+            {
+                if (dto.CreatedAt.HasValue)
+                {
+                    var indiaTime = TimeZoneInfo.ConvertTimeFromUtc(dto.CreatedAt.Value.ToUniversalTime(), indiaTimeZone);
+                    dto.CreatedAt = indiaTime;
+                    dto.CreatedAtFormatted = indiaTime.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
+                }
+                if (dto.ResolvedAt.HasValue)
+                {
+                    var indiaTime = TimeZoneInfo.ConvertTimeFromUtc(dto.ResolvedAt.Value.ToUniversalTime(), indiaTimeZone);
+                    dto.ResolvedAt = indiaTime;
+                    dto.ResolvedAtFormatted = indiaTime.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
+                }
+            }
+            return Ok(dtosFiltered);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "admin,security_staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var userEmail = User.FindFirst("email")?.Value ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Email == userEmail);
+            if (user == null) return Unauthorized();
+            var complaint = _context.Complaints
+                .Include(c => c.RaisedByNavigation)
+                .FirstOrDefault(c => c.ComplaintId == id);
+            if (complaint == null) return NotFound();
+            var dto = _mapper.Map<ComplaintDto>(complaint);
+            var indiaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+            if (dto.CreatedAt.HasValue)
+            {
+                var indiaTime = TimeZoneInfo.ConvertTimeFromUtc(dto.CreatedAt.Value.ToUniversalTime(), indiaTimeZone);
+                dto.CreatedAt = indiaTime;
+                dto.CreatedAtFormatted = indiaTime.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
+            }
+            if (dto.ResolvedAt.HasValue)
+            {
+                var indiaTime = TimeZoneInfo.ConvertTimeFromUtc(dto.ResolvedAt.Value.ToUniversalTime(), indiaTimeZone);
+                dto.ResolvedAt = indiaTime;
+                dto.ResolvedAtFormatted = indiaTime.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
+            }
+            return Ok(dto);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "resident")]
+        public IActionResult Create([FromBody] CreateComplaintDto dto)
+        {
+            var userEmail = User.FindFirst("email")?.Value ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Email == userEmail);
+            if (user == null)
+                return BadRequest("User not found.");
+            if (user.FlatId == null)
+                return BadRequest("Resident does not have a flat assigned.");
+
+            var indiaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+            dto.FlatId = user.FlatId;
+            dto.RaisedBy = user.UserId;
+            dto.Status = "Pending";
+            dto.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, indiaTimeZone);
+
+            var complaint = _mapper.Map<Complaint>(dto);
+            _context.Complaints.Add(complaint);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(Get), new { id = complaint.ComplaintId }, _mapper.Map<ComplaintDto>(complaint));
+        }
+
+        [HttpPut("{id}/status")]
+        [Authorize(Roles = "admin")]
+        public IActionResult UpdateStatus(int id, [FromBody] UpdateComplaintStatusDto dto)
+        {
+            var userEmail = User.FindFirst("email")?.Value ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Email == userEmail);
+            var complaint = _context.Complaints
+                .Include(c => c.RaisedByNavigation)
+                .FirstOrDefault(c => c.ComplaintId == id);
+            if (complaint == null) return NotFound();
+
+            complaint.Status = dto.Status;
+            if (dto.Status == "Resolved" || dto.Status == "Closed")
+            {
+                var indiaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+                complaint.ResolvedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, indiaTimeZone);
+            }
+            _context.SaveChanges();
+            return Ok(_mapper.Map<ComplaintDto>(complaint));
+        }
+    }
+}

@@ -1,0 +1,15 @@
+﻿using FluentValidation;
+using HousingHubBackend.Dtos;
+
+namespace HousingHubBackend.Validators
+{
+    public class UserAccountDtoValidator : AbstractValidator<UserAccountDto>
+    {
+        public UserAccountDtoValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.Email).NotEmpty().EmailAddress();
+            RuleFor(x => x.Role).NotEmpty();
+        }
+    }
+}

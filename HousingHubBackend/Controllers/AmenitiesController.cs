@@ -1,0 +1,85 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos;
+using AutoMapper;
+using FluentValidation;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class AmenitiesController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<CreateAmenityDto> _createValidator;
+        private readonly IValidator<UpdateAmenityDto> _updateValidator;
+
+        public AmenitiesController(
+            HousingHubDBContext context,
+            IMapper mapper,
+            IValidator<CreateAmenityDto> createValidator,
+            IValidator<UpdateAmenityDto> updateValidator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult GetAll()
+        {
+            var amenities = _context.Amenities.ToList();
+            var dtos = _mapper.Map<IEnumerable<AmenityDto>>(amenities);
+            return Ok(dtos);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var amenity = _context.Amenities.Find(id);
+            if (amenity == null) return NotFound();
+            return Ok(_mapper.Map<AmenityDto>(amenity));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult Create([FromBody] CreateAmenityDto dto)
+        {
+            var amenity = _mapper.Map<Amenity>(dto);
+            _context.Amenities.Add(amenity);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(Get), new { id = amenity.AmenityId }, _mapper.Map<AmenityDto>(amenity));
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult Update(int id, [FromBody] UpdateAmenityDto dto)
+        {
+            var existing = _context.Amenities.Find(id);
+            if (existing == null) return NotFound();
+            _mapper.Map(dto, existing);
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "super_admin,admin")]
+        public IActionResult Delete(int id)
+        {
+            var amenity = _context.Amenities.Find(id);
+            if (amenity == null) return NotFound();
+            _context.Amenities.Remove(amenity);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

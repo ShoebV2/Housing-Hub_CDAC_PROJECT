@@ -1,0 +1,66 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using HousingHubBackend.Models;
+using System.Linq;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ComplaintsController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        public ComplaintsController(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            return Ok(_context.Complaints.ToList());
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            var complaint = _context.Complaints.Find(id);
+            if (complaint == null) return NotFound();
+            return Ok(complaint);
+        }
+
+        [HttpPost]
+        public IActionResult Create([FromBody] Complaint complaint)
+        {
+            _context.Complaints.Add(complaint);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(Get), new { id = complaint.ComplaintId }, complaint);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody] Complaint complaint)
+        {
+            var existing = _context.Complaints.Find(id);
+            if (existing == null) return NotFound();
+            existing.FlatId = complaint.FlatId;
+            existing.RaisedBy = complaint.RaisedBy;
+            existing.Title = complaint.Title;
+            existing.Description = complaint.Description;
+            existing.Category = complaint.Category;
+            existing.Status = complaint.Status;
+            existing.CreatedAt = complaint.CreatedAt;
+            existing.ResolvedAt = complaint.ResolvedAt;
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var complaint = _context.Complaints.Find(id);
+            if (complaint == null) return NotFound();
+            _context.Complaints.Remove(complaint);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

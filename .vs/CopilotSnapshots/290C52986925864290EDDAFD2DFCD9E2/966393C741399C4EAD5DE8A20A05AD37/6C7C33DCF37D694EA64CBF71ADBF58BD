@@ -1,0 +1,214 @@
+﻿import React, { useEffect, useState } from 'react';
+import { API_BASE_URL } from '../config';
+import Button from './UI/Button';
+import Input from './UI/Input';
+import { useAuth } from '../contexts/AuthContext';
+
+const CATEGORIES = [
+    'Plumbing',
+    'Electrical',
+    'Cleaning',
+    'Security',
+    'Other'
+];
+
+const ComplaintsList = () => {
+    const { user } = useAuth();
+    const [complaints, setComplaints] = useState([]);
+    const [flats, setFlats] = useState([]);
+    const [wings, setWings] = useState([]);
+    const [filterWing, setFilterWing] = useState('');
+    const [form, setForm] = useState({ title: '', description: '', category: CATEGORIES[0] });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem('token');
+        return {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        };
+    };
+
+    // Fetch wings for admin's society only
+    const fetchWings = async () => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/wings`, { headers: getAuthHeaders() });
+            if (!res.ok) throw new Error('Failed to load wings');
+            const data = await res.json();
+            setWings(data.filter(w => w.societyId === user.societyId));
+        } catch {
+            setWings([]);
+        }
+    };
+
+    // Fetch flats for user's society only
+    const fetchFlats = async () => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/flats`, { headers: getAuthHeaders() });
+            if (!res.ok) throw new Error('Failed to load flats');
+            const data = await res.json();
+            setFlats(data.filter(f => f.wing && f.wing.societyId === user.societyId));
+        } catch {
+            setFlats([]);
+        }
+    };
+
+    // Fetch complaints for user's society only, with wing filter for admin
+    const fetchComplaints = async () => {
+        setLoading(true);
+        try {
+            let url = `${API_BASE_URL}/complaints`;
+            if (user.role === 'admin' && filterWing) {
+                url += `?wingId=${filterWing}`;
+            }
+            const res = await fetch(url, { headers: getAuthHeaders() });
+            if (!res.ok) throw new Error('Failed to load complaints');
+            const data = await res.json();
+            setComplaints(data);
+        } catch {
+            setError('Failed to load complaints');
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        fetchFlats();
+        if (user.role === 'admin') fetchWings();
+        // eslint-disable-next-line
+    }, [user?.societyId]);
+
+    useEffect(() => {
+        fetchComplaints();
+        // eslint-disable-next-line
+    }, [flats, filterWing]);
+
+    const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+
+    // Admin: update status
+    const handleStatusUpdate = async (id, status) => {
+        setLoading(true);
+        try {
+            await fetch(`${API_BASE_URL}/complaints/${id}/status`, {
+                method: 'PUT',
+                headers: getAuthHeaders(),
+                body: JSON.stringify(status)
+            });
+            fetchComplaints();
+        } catch {
+            setError('Failed to update status');
+        }
+        setLoading(false);
+    };
+
+    // Resident: create complaint
+    const handleSubmit = async e => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+        try {
+            const payload = {
+                title: form.title,
+                description: form.description,
+                category: form.category
+            };
+            let url = `${API_BASE_URL}/complaints`;
+            let method = 'POST';
+            const res = await fetch(url, {
+                method,
+                headers: getAuthHeaders(),
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error('Failed to save complaint');
+            setForm({ title: '', description: '', category: CATEGORIES[0] });
+            fetchComplaints();
+        } catch {
+            setError('Failed to save complaint');
+        }
+        setLoading(false);
+    };
+
+    return (
+        <div>
+            <h2 className="text-lg font-semibold mb-4">Complaints</h2>
+            {user.role === 'admin' && (
+                <div className="flex gap-2 mb-4 items-center">
+                    <label className="font-medium">Filter by Wing:</label>
+                    <select value={filterWing} onChange={e => setFilterWing(e.target.value)} className="border rounded px-2 py-1">
+                        <option value="">All Wings</option>
+                        {wings.map(w => (
+                            <option key={w.wingId} value={w.wingId}>{w.name}</option>
+                        ))}
+                    </select>
+                </div>
+            )}
+            {user.role === 'resident' && (
+                <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 mb-4 items-end">
+                    <Input name="title" value={form.title} onChange={handleChange} placeholder="Title" required />
+                    <select name="category" value={form.category} onChange={handleChange} className="border rounded px-2 py-1" required>
+                        {CATEGORIES.map(cat => (
+                            <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                    </select>
+                    <Input name="description" value={form.description} onChange={handleChange} placeholder="Description" required />
+                    <Button type="submit" variant="primary" disabled={loading}>Add</Button>
+                </form>
+            )}
+            {error && <div className="text-red-600 mb-2">{error}</div>}
+            <div className="overflow-x-auto">
+                <table className="min-w-full border text-sm">
+                    <thead>
+                        <tr className="bg-gray-100">
+                            <th className="px-4 py-2 border">Title</th>
+                            <th className="px-4 py-2 border">Category</th>
+                            <th className="px-4 py-2 border">Description</th>
+                            {user.role === 'admin' && <th className="px-4 py-2 border">Flat</th>}
+                            {user.role === 'admin' && <th className="px-4 py-2 border">Wing</th>}
+                            <th className="px-4 py-2 border">Status</th>
+                            <th className="px-4 py-2 border">Created At</th>
+                            <th className="px-4 py-2 border">Closed At</th>
+                            <th className="px-4 py-2 border">Raised By</th>
+                            {user.role === 'admin' && <th className="px-4 py-2 border">Actions</th>}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {complaints.map(complaint => {
+                            const flat = flats.find(f => f.flatId === complaint.flatId);
+                            return (
+                                <tr key={complaint.complaintId}>
+                                    <td className="border px-4 py-2">{complaint.title}</td>
+                                    <td className="border px-4 py-2">{complaint.category}</td>
+                                    <td className="border px-4 py-2">{complaint.description}</td>
+                                    {user.role === 'admin' && <td className="border px-4 py-2">{flat?.flatNumber || '-'}</td>}
+                                    {user.role === 'admin' && <td className="border px-4 py-2">{flat?.wing?.name || '-'}</td>}
+                                    <td className="border px-4 py-2">{complaint.status}</td>
+                                    <td className="border px-4 py-2">{complaint.createdAt ? new Date(complaint.createdAt).toLocaleString() : '-'}</td>
+                                    <td className="border px-4 py-2">{complaint.resolvedAt ? new Date(complaint.resolvedAt).toLocaleString() : '-'}</td>
+                                    <td className="border px-4 py-2">{complaint.raisedBy}</td>
+                                    {user.role === 'admin' && (
+                                        <td className="border px-4 py-2 space-x-2">
+                                            <select
+                                                value={complaint.status}
+                                                onChange={e => handleStatusUpdate(complaint.complaintId, e.target.value)}
+                                                className="border rounded px-2 py-1"
+                                            >
+                                                <option value="Pending">Pending</option>
+                                                <option value="Resolved">Resolved</option>
+                                                <option value="Closed">Closed</option>
+                                            </select>
+                                        </td>
+                                    )}
+                                </tr>
+                            );
+                        })}
+                        {complaints.length === 0 && (
+                            <tr><td colSpan={user.role === 'admin' ? 10 : 7} className="text-center py-4">No complaints found.</td></tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};
+
+export default ComplaintsList;

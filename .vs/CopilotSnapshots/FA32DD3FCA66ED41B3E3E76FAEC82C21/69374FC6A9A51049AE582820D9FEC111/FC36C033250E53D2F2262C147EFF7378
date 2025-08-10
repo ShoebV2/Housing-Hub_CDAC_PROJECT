@@ -1,0 +1,9 @@
+﻿using Microsoft.AspNetCore.SignalR;
+
+namespace HousingHubBackend.Hubs
+{
+    public class NotificationHub : Hub
+    {
+        // You can add methods here for client-server communication if needed
+    }
+}

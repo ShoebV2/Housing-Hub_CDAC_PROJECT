@@ -1,0 +1,31 @@
+﻿using System.Linq;
+using HousingHubBackend.Models;
+using HousingHubBackend.Services.Interfaces;
+using HousingHubBackend.Data;
+
+namespace HousingHubBackend.Services.Implementations
+{
+    public class AuthService : IAuthService
+    {
+        private readonly HousingHubDBContext _context;
+        public AuthService(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+
+        public UserAccount Authenticate(string email, string password)
+        {
+            // You should hash and compare passwords in production
+            return _context.UserAccounts.FirstOrDefault(u => u.Email == email && u.Password == password);
+        }
+
+        public UserAccount Register(UserAccount user)
+        {
+            if (_context.UserAccounts.Any(u => u.Email == user.Email))
+                return null;
+            _context.UserAccounts.Add(user);
+            _context.SaveChanges();
+            return user;
+        }
+    }
+}

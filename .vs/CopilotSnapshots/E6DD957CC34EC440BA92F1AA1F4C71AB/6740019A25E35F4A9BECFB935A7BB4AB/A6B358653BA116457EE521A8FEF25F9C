@@ -1,0 +1,65 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using System.Linq;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AnnouncementsController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        public AnnouncementsController(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            return Ok(_context.Announcements.ToList());
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            var announcement = _context.Announcements.Find(id);
+            if (announcement == null) return NotFound();
+            return Ok(announcement);
+        }
+
+        [HttpPost]
+        public IActionResult Create([FromBody] Announcement announcement)
+        {
+            _context.Announcements.Add(announcement);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(Get), new { id = announcement.Aid }, announcement);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody] Announcement announcement)
+        {
+            var existing = _context.Announcements.Find(id);
+            if (existing == null) return NotFound();
+            existing.Title = announcement.Title;
+            existing.Content = announcement.Content;
+            existing.CreatedAt = announcement.CreatedAt;
+            existing.CreatedBy = announcement.CreatedBy;
+            existing.SocietyId = announcement.SocietyId;
+            existing.IsGlobal = announcement.IsGlobal;
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var announcement = _context.Announcements.Find(id);
+            if (announcement == null) return NotFound();
+            _context.Announcements.Remove(announcement);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

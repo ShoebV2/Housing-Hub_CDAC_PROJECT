@@ -1,0 +1,66 @@
+﻿using AutoMapper;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos.Amenity;
+using HousingHubBackend.Dtos.Booking;
+using HousingHubBackend.Dtos.Complaint;
+using HousingHubBackend.Dtos.Maintenance;
+using HousingHubBackend.Dtos.Society;
+using HousingHubBackend.Dtos.User;
+using HousingHubBackend.Dtos.Visitor;
+using HousingHubBackend.Dtos.Wing;
+using HousingHubBackend.Dtos.Announcement;
+using HousingHubBackend.Dtos.Flat;
+
+namespace HousingHubBackend.Mapping
+{
+    public class EntityProfiles : Profile
+    {
+        public EntityProfiles()
+        {
+            // Amenity mappings
+            CreateMap<Amenity, AmenityDto>().ReverseMap();
+            CreateMap<Amenity, CreateAmenityDto>().ReverseMap();
+            CreateMap<Amenity, UpdateAmenityDto>().ReverseMap();
+
+            // Booking mappings
+            CreateMap<Booking, BookingDto>().ReverseMap();
+            CreateMap<Booking, CreateBookingDto>().ReverseMap();
+            CreateMap<Booking, UpdateBookingDto>().ReverseMap();
+
+            // Complaint mappings
+            CreateMap<Complaint, ComplaintDto>().ReverseMap();
+            CreateMap<Complaint, CreateComplaintDto>().ReverseMap();
+            CreateMap<Complaint, UpdateComplaintDto>().ReverseMap();
+
+            // MaintenanceBill mappings
+            CreateMap<MaintenanceBill, MaintenanceBillDto>().ReverseMap();
+            CreateMap<MaintenanceFee, MaintenanceFeeDto>().ReverseMap();
+
+            // Society mappings
+            CreateMap<Society, SocietyDto>().ReverseMap();
+
+            // UserAccount mappings
+            CreateMap<UserAccount, UserAccountDto>().ReverseMap();
+
+            // Visitor mappings
+            CreateMap<Visitor, VisitorDto>().ReverseMap();
+            CreateMap<Visitor, CreateVisitorDto>().ReverseMap();
+            CreateMap<Visitor, UpdateVisitorDto>().ReverseMap();
+
+            // Wing mappings
+            CreateMap<Wing, WingDto>().ReverseMap();
+            CreateMap<Wing, CreateWingDto>().ReverseMap();
+            CreateMap<Wing, UpdateWingDto>().ReverseMap();
+
+            // Announcement mappings
+            CreateMap<Announcement, AnnouncementDto>().ReverseMap();
+            CreateMap<Announcement, CreateAnnouncementDto>().ReverseMap();
+            CreateMap<Announcement, UpdateAnnouncementDto>().ReverseMap();
+            
+            // Flat mappings
+            CreateMap<Flat, FlatDto>().ReverseMap();
+            CreateMap<CreateFlatDto, Flat>();
+            CreateMap<UpdateFlatDto, Flat>();
+        }
+    }
+}

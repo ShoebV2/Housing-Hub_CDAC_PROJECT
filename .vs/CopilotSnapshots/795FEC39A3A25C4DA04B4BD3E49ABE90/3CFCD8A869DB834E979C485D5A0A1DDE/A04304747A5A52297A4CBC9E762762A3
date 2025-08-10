@@ -1,0 +1,96 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos;
+using AutoMapper;
+using FluentValidation;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class SocietiesController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<SocietyDto> _validator;
+        private readonly IValidator<CreateSocietyDto> _createValidator;
+        private readonly IValidator<UpdateSocietyDto> _updateValidator;
+
+        public SocietiesController(
+            HousingHubDBContext context,
+            IMapper mapper,
+            IValidator<SocietyDto> validator,
+            IValidator<CreateSocietyDto> createValidator,
+            IValidator<UpdateSocietyDto> updateValidator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _validator = validator;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult GetAll()
+        {
+            var societies = _context.Societies.ToList();
+            var dtos = _mapper.Map<IEnumerable<SocietyDto>>(societies);
+            return Ok(dtos);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var society = _context.Societies.Find(id);
+            if (society == null) return NotFound();
+            return Ok(_mapper.Map<SocietyDto>(society));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult Create([FromBody] CreateSocietyDto dto)
+        {
+            var validation = _createValidator.Validate(dto);
+            if (!validation.IsValid)
+                return BadRequest(validation.Errors);
+            var society = _mapper.Map<Society>(dto);
+            _context.Societies.Add(society);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(Get), new { id = society.SocietyId }, _mapper.Map<SocietyDto>(society));
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult Update(int id, [FromBody] UpdateSocietyDto dto)
+        {
+            if (id != dto.SocietyId)
+                return BadRequest("SocietyId in URL and body must match.");
+            var validation = _updateValidator.Validate(dto);
+            if (!validation.IsValid)
+                return BadRequest(validation.Errors);
+            var existing = _context.Societies.Find(id);
+            if (existing == null) return NotFound();
+            _mapper.Map(dto, existing);
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "super_admin,admin")]
+        public IActionResult Delete(int id)
+        {
+            var society = _context.Societies.Find(id);
+            if (society == null) return NotFound();
+            _context.Societies.Remove(society);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

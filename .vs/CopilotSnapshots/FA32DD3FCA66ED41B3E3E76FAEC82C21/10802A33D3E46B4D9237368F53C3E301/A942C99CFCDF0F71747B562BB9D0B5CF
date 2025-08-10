@@ -1,0 +1,35 @@
+﻿using FluentValidation;
+using HousingHubBackend.Dtos;
+
+namespace HousingHubBackend.Validators
+{
+    public class FlatDtoValidator : AbstractValidator<FlatDto>
+    {
+        public FlatDtoValidator()
+        {
+            RuleFor(x => x.FlatNumber).NotEmpty();
+            RuleFor(x => x.FloorNumber).NotEmpty();
+            RuleFor(x => x.Status).NotEmpty();
+        }
+    }
+
+    public class CreateFlatDtoValidator : AbstractValidator<CreateFlatDto>
+    {
+        public CreateFlatDtoValidator()
+        {
+            RuleFor(x => x.FlatNumber).NotEmpty();
+            RuleFor(x => x.FloorNumber).NotEmpty();
+            RuleFor(x => x.Status).NotEmpty();
+        }
+    }
+
+    public class UpdateFlatDtoValidator : AbstractValidator<UpdateFlatDto>
+    {
+        public UpdateFlatDtoValidator()
+        {
+            RuleFor(x => x.FlatNumber).NotEmpty();
+            RuleFor(x => x.FloorNumber).NotEmpty();
+            RuleFor(x => x.Status).NotEmpty();
+        }
+    }
+}

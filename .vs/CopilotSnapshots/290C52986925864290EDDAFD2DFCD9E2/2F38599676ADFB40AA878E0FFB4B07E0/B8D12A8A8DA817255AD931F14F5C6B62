@@ -1,0 +1,108 @@
+﻿import React, { useEffect, useState } from 'react';
+import { API_BASE_URL } from '../config';
+import Button from './UI/Button';
+import Input from './UI/Input';
+import { useAuth } from '../contexts/AuthContext';
+
+const CATEGORIES = [
+    'Plumbing',
+    'Electrical',
+    'Cleaning',
+    'Security',
+    'Other'
+];
+
+const ComplaintsList = () => {
+    const { user } = useAuth();
+    const [complaints, setComplaints] = useState([]);
+    const [flats, setFlats] = useState([]);
+    const [wings, setWings] = useState([]);
+    const [filterWing, setFilterWing] = useState('');
+    const [form, setForm] = useState({ title: '', description: '', category: CATEGORIES[0] });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem('token');
+        return {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        };
+    };
+
+    // Fetch wings for admin's society only
+    const fetchWings = async () => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/wings`, { headers: getAuthHeaders() });
+            if (!res.ok) throw new Error('Failed to load wings');
+            const data = await res.json();
+            setWings(data.filter(w => w.societyId === user.societyId));
+        } catch {
+            setWings([]);
+        }
+    };
+
+    // Fetch flats for user's society only
+    const fetchFlats = async () => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/flats`, { headers: getAuthHeaders() });
+            if (!res.ok) throw new Error('Failed to load flats');
+            const data = await res.json();
+            setFlats(data.filter(f => f.wing && f.wing.societyId === user.societyId));
+        } catch {
+            setFlats([]);
+        }
+    };
+
+    // Fetch complaints for user's society only, with wing filter for admin
+    const fetchComplaints = async () => {
+        setLoading(true);
+        try {
+            let url = `${API_BASE_URL}/complaints`;
+            if (user.role === 'admin' && filterWing) {
+                url += `?wingId=${filterWing}`;
+            }
+            const res = await fetch(url, { headers: getAuthHeaders() });
+            if (!res.ok) {
+                let errorMsg = 'Failed to load complaints';
+                try {
+                    const errData = await res.json();
+                    errorMsg += ': ' + (errData.message || JSON.stringify(errData));
+                } catch (e) {
+                    errorMsg += ` (HTTP ${res.status})`;
+                }
+                throw new Error(errorMsg);
+            }
+            let data = await res.json();
+            // Resident: only see own complaints
+            if (user.role === 'resident') {
+                data = data.filter(c => c.raisedBy === user.userId);
+            }
+            setComplaints(data);
+        } catch (err) {
+            setError(err.message || 'Failed to load complaints');
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        fetchFlats();
+        if (user.role === 'admin') fetchWings();
+        // eslint-disable-next-line
+    }, [user?.societyId]);
+
+    useEffect(() => {
+        fetchComplaints();
+        // eslint-disable-next-line
+    }, [flats, filterWing]);
+
+    const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+
+    // Admin: update status
+    const handleStatusUpdate = async (id, status) => {
+        setLoading(true);
+        try {
+            await fetch(`${API_BASE_URL}/complaints/${id}/status`, {
+                method: 'PUT',
+                headers: {
+                   

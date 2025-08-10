@@ -1,0 +1,67 @@
+using System.Collections.Generic;
+using System.Linq;
+using HousingHubBackend.Models;
+using HousingHubBackend.Services.Interfaces;
+using HousingHubBackend.Data;
+
+namespace HousingHubBackend.Services.Implementations
+{
+    public class BookingService : IBookingService
+    {
+        private readonly HousingHubDBContext _context;
+        public BookingService(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+
+        public IEnumerable<Booking> GetAll()
+        {
+            return _context.Bookings.ToList();
+        }
+
+        public Booking GetById(int id)
+        {
+            var booking = _context.Bookings.Find(id);
+            if (booking == null)
+                throw new KeyNotFoundException($"Booking with ID {id} not found.");
+            return booking;
+        }
+
+        public Booking Add(Booking booking)
+        {
+            _context.Bookings.Add(booking);
+            _context.SaveChanges();
+            return booking;
+        }
+
+        public Booking Update(int id, Booking booking)
+        {
+            var existing = _context.Bookings.Find(id);
+            if (existing == null)
+                throw new KeyNotFoundException($"Booking with ID {id} not found.");
+            existing.UserId = booking.UserId;
+            existing.FlatId = booking.FlatId;
+            existing.AmenityId = booking.AmenityId;
+            existing.CreatedAt = booking.CreatedAt;
+            existing.StartDate = booking.StartDate;
+            existing.EndDate = booking.EndDate;
+            existing.StartTime = booking.StartTime;
+            existing.EndTime = booking.EndTime;
+            existing.Amount = booking.Amount;
+            existing.Paid = booking.Paid;
+            existing.TransactionId = booking.TransactionId;
+            existing.Status = booking.Status;
+            _context.SaveChanges();
+            return existing;
+        }
+
+        public bool Delete(int id)
+        {
+            var booking = _context.Bookings.Find(id);
+            if (booking == null) return false;
+            _context.Bookings.Remove(booking);
+            _context.SaveChanges();
+            return true;
+        }
+    }
+}

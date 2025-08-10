@@ -1,0 +1,193 @@
+﻿import React, { useEffect, useState } from 'react';
+import { API_BASE_URL } from '../config';
+import Button from './UI/Button';
+import Input from './UI/Input';
+import { useAuth } from '../contexts/AuthContext';
+
+const ComplaintsList = () => {
+  const { user } = useAuth();
+  const [complaints, setComplaints] = useState([]);
+  const [flats, setFlats] = useState([]);
+  const [form, setForm] = useState({ title: '', description: '', category: '', flatId: '' });
+  const [editingId, setEditingId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    };
+  };
+
+  // Fetch flats for user's society only
+  const fetchFlats = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/flats`, {
+        headers: getAuthHeaders()
+      });
+      if (!res.ok) throw new Error('Failed to load flats');
+      const data = await res.json();
+      setFlats(data.filter(f => f.wing && f.wing.societyId === user.societyId));
+    } catch {
+      setFlats([]);
+    }
+  };
+
+  // Fetch complaints for user's society only
+  const fetchComplaints = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/complaints`, {
+        headers: getAuthHeaders()
+      });
+      if (!res.ok) throw new Error('Failed to load complaints');
+      const data = await res.json();
+      setComplaints(data.filter(c => {
+        const flat = flats.find(f => f.flatId === c.flatId);
+        return flat && flat.wing && flat.wing.societyId === user.societyId;
+      }));
+    } catch {
+      setError('Failed to load complaints');
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchFlats();
+    // eslint-disable-next-line
+  }, [user?.societyId]);
+
+  useEffect(() => {
+    if (flats.length > 0) fetchComplaints();
+    // eslint-disable-next-line
+  }, [flats]);
+
+  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      const payload = {
+        title: form.title,
+        description: form.description,
+        category: form.category,
+        flatId: form.flatId ? parseInt(form.flatId, 10) : null,
+        raisedBy: user.userId
+      };
+      let url = `${API_BASE_URL}/complaints`;
+      let method = 'POST';
+      if (editingId) {
+        url = `${API_BASE_URL}/complaints/${editingId}`;
+        method = 'PUT';
+        payload.complaintId = editingId;
+      }
+      const res = await fetch(url, {
+        method,
+        headers: getAuthHeaders(),
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Failed to save complaint');
+      setForm({ title: '', description: '', category: '', flatId: '' });
+      setEditingId(null);
+      fetchComplaints();
+    } catch {
+      setError('Failed to save complaint');
+    }
+    setLoading(false);
+  };
+
+  const handleEdit = complaint => {
+    setForm({
+      title: complaint.title,
+      description: complaint.description,
+      category: complaint.category,
+      flatId: complaint.flatId ? String(complaint.flatId) : ''
+    });
+    setEditingId(complaint.complaintId);
+  };
+
+  const handleDelete = async id => {
+    if (!window.confirm('Delete this complaint?')) return;
+    setLoading(true);
+    try {
+      await fetch(`${API_BASE_URL}/complaints/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      fetchComplaints();
+    } catch {
+      setError('Failed to delete complaint');
+    }
+    setLoading(false);
+  };
+
+  const canEditDelete = user.role === 'admin';
+
+  return (
+    <div>
+      <h2 className="text-lg font-semibold mb-4">Complaints</h2>
+      <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 mb-4 items-end">
+        <Input name="title" value={form.title} onChange={handleChange} placeholder="Title" required />
+        <Input name="category" value={form.category} onChange={handleChange} placeholder="Category" required />
+        <Input name="description" value={form.description} onChange={handleChange} placeholder="Description" required />
+        <select name="flatId" value={form.flatId} onChange={handleChange} className="border rounded px-2 py-1" required>
+          <option value="">Select Flat</option>
+          {flats.map(f => (
+            <option key={f.flatId} value={f.flatId}>{f.flatNumber} ({f.floorNumber})</option>
+          ))}
+        </select>
+        <Button type="submit" variant="primary" disabled={loading}>
+          {editingId ? 'Update' : 'Add'}
+        </Button>
+        {editingId && (
+          <Button type="button" variant="secondary" onClick={() => { setForm({ title: '', description: '', category: '', flatId: '' }); setEditingId(null); }}>
+            Cancel
+          </Button>
+        )}
+      </form>
+      {error && <div className="text-red-600 mb-2">{error}</div>}
+      <div className="overflow-x-auto">
+        <table className="min-w-full border text-sm">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="px-4 py-2 border">Title</th>
+              <th className="px-4 py-2 border">Category</th>
+              <th className="px-4 py-2 border">Description</th>
+              <th className="px-4 py-2 border">Flat</th>
+              <th className="px-4 py-2 border">Status</th>
+              <th className="px-4 py-2 border">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {complaints.map(complaint => (
+              <tr key={complaint.complaintId}>
+                <td className="border px-4 py-2">{complaint.title}</td>
+                <td className="border px-4 py-2">{complaint.category}</td>
+                <td className="border px-4 py-2">{complaint.description}</td>
+                <td className="border px-4 py-2">{flats.find(f => f.flatId === complaint.flatId)?.flatNumber || '-'}</td>
+                <td className="border px-4 py-2">{complaint.status}</td>
+                <td className="border px-4 py-2 space-x-2">
+                  {canEditDelete && (
+                    <>
+                      <Button type="button" variant="secondary" onClick={() => handleEdit(complaint)} size="sm">Edit</Button>
+                      <Button type="button" variant="danger" onClick={() => handleDelete(complaint.complaintId)} size="sm">Delete</Button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {complaints.length === 0 && (
+              <tr><td colSpan={6} className="text-center py-4">No complaints found.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default ComplaintsList;

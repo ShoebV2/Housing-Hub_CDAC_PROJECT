@@ -1,0 +1,49 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos;
+using AutoMapper;
+using FluentValidation;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class AnnouncementsController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<Dtos.CreateAnnouncementDto> _createValidator;
+        private readonly IValidator<Dtos.UpdateAnnouncementDto> _updateValidator;
+
+        public AnnouncementsController(HousingHubDBContext context, IMapper mapper, IValidator<Dtos.CreateAnnouncementDto> createValidator, IValidator<Dtos.UpdateAnnouncementDto> updateValidator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult GetAll()
+        {
+            var announcements = _context.Announcements.ToList();
+            var dtos = _mapper.Map<IEnumerable<Dtos.AnnouncementDto>>(announcements);
+            return Ok(dtos);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var announcement = _context.Announcements.Find(id);
+            if (announcement == null) return NotFound();
+            return Ok(_mapper.Map<Dtos.AnnouncementDto>(announcement));
+        }
+    }
+}

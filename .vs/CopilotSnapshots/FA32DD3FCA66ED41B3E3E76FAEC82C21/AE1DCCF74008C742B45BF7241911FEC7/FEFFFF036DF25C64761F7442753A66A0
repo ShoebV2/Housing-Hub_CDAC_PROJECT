@@ -1,0 +1,22 @@
+﻿using FluentValidation;
+using HousingHubBackend.Dtos.Maintenance;
+
+namespace HousingHubBackend.Validators
+{
+    public class MaintenanceBillDtoValidator : AbstractValidator<MaintenanceBillDto>
+    {
+        public MaintenanceBillDtoValidator()
+        {
+            RuleFor(x => x.FlatId).NotNull();
+            RuleFor(x => x.Amount).NotNull();
+        }
+    }
+    public class MaintenanceFeeDtoValidator : AbstractValidator<MaintenanceFeeDto>
+    {
+        public MaintenanceFeeDtoValidator()
+        {
+            RuleFor(x => x.WingId).NotNull();
+            RuleFor(x => x.RatePerSqft).NotNull();
+        }
+    }
+}

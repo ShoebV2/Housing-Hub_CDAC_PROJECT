@@ -1,0 +1,52 @@
+﻿// DTO for Booking
+namespace HousingHubBackend.Dtos.Booking
+{
+    public class BookingDto
+    {
+        public int BookingId { get; set; }
+        public int? UserId { get; set; }
+        public int? FlatId { get; set; }
+        public int? AmenityId { get; set; }
+        public DateOnly? CreatedAt { get; set; }
+        public DateOnly? StartDate { get; set; }
+        public DateOnly? EndDate { get; set; }
+        public TimeOnly? StartTime { get; set; }
+        public TimeOnly? EndTime { get; set; }
+        public double? Amount { get; set; }
+        public bool? Paid { get; set; }
+        public string TransactionId { get; set; }
+        public string Status { get; set; }
+    }
+
+    public class CreateBookingDto
+    {
+        public int? UserId { get; set; }
+        public int? FlatId { get; set; }
+        public int? AmenityId { get; set; }
+        public DateOnly? CreatedAt { get; set; }
+        public DateOnly? StartDate { get; set; }
+        public DateOnly? EndDate { get; set; }
+        public TimeOnly? StartTime { get; set; }
+        public TimeOnly? EndTime { get; set; }
+        public double? Amount { get; set; }
+        public bool? Paid { get; set; }
+        public string TransactionId { get; set; }
+        public string Status { get; set; }
+    }
+
+    public class UpdateBookingDto
+    {
+        public int? UserId { get; set; }
+        public int? FlatId { get; set; }
+        public int? AmenityId { get; set; }
+        public DateOnly? CreatedAt { get; set; }
+        public DateOnly? StartDate { get; set; }
+        public DateOnly? EndDate { get; set; }
+        public TimeOnly? StartTime { get; set; }
+        public TimeOnly? EndTime { get; set; }
+        public double? Amount { get; set; }
+        public bool? Paid { get; set; }
+        public string TransactionId { get; set; }
+        public string Status { get; set; }
+    }
+}

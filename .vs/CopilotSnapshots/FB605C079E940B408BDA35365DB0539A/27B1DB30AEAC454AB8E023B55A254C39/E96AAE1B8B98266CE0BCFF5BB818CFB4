@@ -1,0 +1,186 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos;
+using AutoMapper;
+using FluentValidation;
+using System.Linq;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.SignalR;
+using HousingHubBackend.Hubs;
+using HousingHubBackend.Services.Interfaces;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class AnnouncementsController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<CreateAnnouncementDto> _createValidator;
+        private readonly IValidator<UpdateAnnouncementDto> _updateValidator;
+        private readonly IHubContext<NotificationHub> _hubContext;
+        private readonly INotificationService _notificationService;
+
+        public AnnouncementsController(
+            HousingHubDBContext context,
+            IMapper mapper,
+            IValidator<CreateAnnouncementDto> createValidator,
+            IValidator<UpdateAnnouncementDto> updateValidator,
+            IHubContext<NotificationHub> hubContext,
+            INotificationService notificationService)
+        {
+            _context = context;
+            _mapper = mapper;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
+            _hubContext = hubContext;
+            _notificationService = notificationService;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult GetAll()
+        {
+            var announcements = _context.Announcements.ToList();
+            var dtos = announcements.Select(a => {
+                var dto = _mapper.Map<AnnouncementDto>(a);
+                dto.TargetWingIds = _context.AnnouncementTargetWings.Where(x => x.AnnouncementId == a.Aid).Select(x => x.WingId ?? 0).ToList();
+                dto.TargetFlatIds = _context.AnnouncementTargetFlats.Where(x => x.AnnouncementId == a.Aid).Select(x => x.FlatId ?? 0).ToList();
+                return dto;
+            }).ToList();
+            return Ok(dtos);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var announcement = _context.Announcements.Find(id);
+            if (announcement == null) return NotFound();
+            var dto = _mapper.Map<AnnouncementDto>(announcement);
+            dto.TargetWingIds = _context.AnnouncementTargetWings.Where(x => x.AnnouncementId == id).Select(x => x.WingId ?? 0).ToList();
+            dto.TargetFlatIds = _context.AnnouncementTargetFlats.Where(x => x.AnnouncementId == id).Select(x => x.FlatId ?? 0).ToList();
+            return Ok(dto);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult Create([FromBody] CreateAnnouncementDto dto)
+        {
+            var announcement = _mapper.Map<Announcement>(dto);
+            _context.Announcements.Add(announcement);
+            _context.SaveChanges();
+
+            // Save targets
+            if (dto.IsGlobal == true)
+            {
+                // No need to save targets for global
+            }
+            else
+            {
+                foreach (var wingId in dto.TargetWingIds)
+                {
+                    _context.AnnouncementTargetWings.Add(new AnnouncementTargetWing { AnnouncementId = announcement.Aid, WingId = wingId });
+                }
+                foreach (var flatId in dto.TargetFlatIds)
+                {
+                    _context.AnnouncementTargetFlats.Add(new AnnouncementTargetFlat { AnnouncementId = announcement.Aid, FlatId = flatId });
+                }
+                _context.SaveChanges();
+            }
+
+            // Alert only specific residents who are targeted by this announcement
+            var flatUsers = _context.AnnouncementTargetFlats
+                .Where(atf => atf.AnnouncementId == announcement.Aid && atf.FlatId != null)
+                .SelectMany(atf => _context.UserAccounts.Where(u => u.FlatId == atf.FlatId))
+                .ToList();
+
+            var wingUsers = _context.AnnouncementTargetWings
+                .Where(atw => atw.AnnouncementId == announcement.Aid && atw.WingId != null)
+                .SelectMany(atw => _context.UserAccounts.Where(u => u.FlatId != null && _context.Flats.Any(f => f.FlatId == u.FlatId && f.WingId == atw.WingId)))
+                .ToList();
+
+            var allUsers = flatUsers.Concat(wingUsers).Distinct().ToList();
+
+            foreach (var user in allUsers)
+            {
+                // SignalR notification
+                _hubContext.Clients.User(user.UserId.ToString()).SendAsync("ReceiveNotification", $"New announcement: {announcement.Title}");
+                // Email notification
+                if (!string.IsNullOrEmpty(user.Email))
+                {
+                    _notificationService.SendNotification(
+                        user.Email,
+                        "New Announcement",
+                        $"New announcement: {announcement.Title}"
+                    );
+                }
+            }
+
+            return CreatedAtAction(nameof(Get), new { id = announcement.Aid }, _mapper.Map<AnnouncementDto>(announcement));
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult Update(int id, [FromBody] UpdateAnnouncementDto dto)
+        {
+            var existing = _context.Announcements.Find(id);
+            if (existing == null) return NotFound();
+
+            _mapper.Map(dto, existing);
+            _context.SaveChanges();
+
+            // Remove old targets
+            var oldWings = _context.AnnouncementTargetWings.Where(x => x.AnnouncementId == id).ToList();
+            _context.AnnouncementTargetWings.RemoveRange(oldWings);
+            var oldFlats = _context.AnnouncementTargetFlats.Where(x => x.AnnouncementId == id).ToList();
+            _context.AnnouncementTargetFlats.RemoveRange(oldFlats);
+            _context.SaveChanges();
+
+            // Save new targets
+            if (dto.IsGlobal == true)
+            {
+                // No need to save targets for global
+            }
+            else
+            {
+                foreach (var wingId in dto.TargetWingIds)
+                {
+                    _context.AnnouncementTargetWings.Add(new AnnouncementTargetWing { AnnouncementId = id, WingId = wingId });
+                }
+                foreach (var flatId in dto.TargetFlatIds)
+                {
+                    _context.AnnouncementTargetFlats.Add(new AnnouncementTargetFlat { AnnouncementId = id, FlatId = flatId });
+                }
+                _context.SaveChanges();
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "super_admin,admin")]
+        public IActionResult Delete(int id)
+        {
+            var announcement = _context.Announcements.Find(id);
+            if (announcement == null) return NotFound();
+
+            // Remove dependent AnnouncementTargetWing and AnnouncementTargetFlat records first
+            var targetWings = _context.AnnouncementTargetWings.Where(x => x.AnnouncementId == id).ToList();
+            if (targetWings.Any())
+                _context.AnnouncementTargetWings.RemoveRange(targetWings);
+            var targetFlats = _context.AnnouncementTargetFlats.Where(x => x.AnnouncementId == id).ToList();
+            if (targetFlats.Any())
+                _context.AnnouncementTargetFlats.RemoveRange(targetFlats);
+            _context.SaveChanges();
+
+            _context.Announcements.Remove(announcement);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

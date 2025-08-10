@@ -1,0 +1,47 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos.Amenity;
+using AutoMapper;
+using FluentValidation;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class AmenitiesController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<AmenityDto> _validator;
+        public AmenitiesController(HousingHubDBContext context, IMapper mapper, IValidator<AmenityDto> validator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _validator = validator;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult GetAll()
+        {
+            var amenities = _context.Amenities.ToList();
+            var dtos = _mapper.Map<IEnumerable<AmenityDto>>(amenities);
+            return Ok(dtos);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var amenity = _context.Amenities.Find(id);
+            if (amenity == null) return NotFound();
+            return Ok(_mapper.Map<AmenityDto>(amenity));
+        }
+
+        [HttpPost]
+       

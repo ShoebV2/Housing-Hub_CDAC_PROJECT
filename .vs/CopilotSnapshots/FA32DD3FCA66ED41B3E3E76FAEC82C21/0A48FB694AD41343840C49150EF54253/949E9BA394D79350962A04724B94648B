@@ -1,0 +1,87 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos;
+using AutoMapper;
+using FluentValidation;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ComplaintsController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<CreateComplaintDto> _createValidator;
+        private readonly IValidator<UpdateComplaintDto> _updateValidator;
+
+        public ComplaintsController(
+            HousingHubDBContext context,
+            IMapper mapper,
+            IValidator<CreateComplaintDto> createValidator,
+            IValidator<UpdateComplaintDto> updateValidator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var complaints = _context.Complaints.ToList();
+            var dtos = _mapper.Map<IEnumerable<ComplaintDto>>(complaints);
+            return Ok(dtos);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            var complaint = _context.Complaints.Find(id);
+            if (complaint == null) return NotFound();
+            return Ok(_mapper.Map<ComplaintDto>(complaint));
+        }
+
+        [HttpPost]
+        public IActionResult Create([FromBody] CreateComplaintDto dto)
+        {
+            var validation = _createValidator.Validate(dto);
+            if (!validation.IsValid)
+                return BadRequest(validation.Errors);
+
+            var complaint = _mapper.Map<Complaint>(dto);
+            _context.Complaints.Add(complaint);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(Get), new { id = complaint.ComplaintId }, _mapper.Map<ComplaintDto>(complaint));
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody] UpdateComplaintDto dto)
+        {
+            var validation = _updateValidator.Validate(dto);
+            if (!validation.IsValid)
+                return BadRequest(validation.Errors);
+
+            var existing = _context.Complaints.Find(id);
+            if (existing == null) return NotFound();
+
+            _mapper.Map(dto, existing);
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var complaint = _context.Complaints.Find(id);
+            if (complaint == null) return NotFound();
+            _context.Complaints.Remove(complaint);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

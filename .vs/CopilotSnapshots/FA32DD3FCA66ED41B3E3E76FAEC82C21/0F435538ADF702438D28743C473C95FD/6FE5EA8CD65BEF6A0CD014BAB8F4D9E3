@@ -1,0 +1,86 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos.Wing;
+using AutoMapper;
+using FluentValidation;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class WingsController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<CreateWingDto> _createValidator;
+        private readonly IValidator<UpdateWingDto> _updateValidator;
+        public WingsController(HousingHubDBContext context, IMapper mapper, IValidator<CreateWingDto> createValidator, IValidator<UpdateWingDto> updateValidator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult GetAll()
+        {
+            var wings = _context.Wings.ToList();
+            var dtos = _mapper.Map<IEnumerable<WingDto>>(wings);
+            return Ok(dtos);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var wing = _context.Wings.Find(id);
+            if (wing == null) return NotFound();
+            return Ok(_mapper.Map<WingDto>(wing));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult Create([FromBody] CreateWingDto dto)
+        {
+            var validation = _createValidator.Validate(dto);
+            if (!validation.IsValid)
+                return BadRequest(validation.Errors);
+            var wing = _mapper.Map<Wing>(dto);
+            _context.Wings.Add(wing);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(Get), new { id = wing.WingId }, _mapper.Map<WingDto>(wing));
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult Update(int id, [FromBody] UpdateWingDto dto)
+        {
+            var validation = _updateValidator.Validate(dto);
+            if (!validation.IsValid)
+                return BadRequest(validation.Errors);
+            var existing = _context.Wings.Find(id);
+            if (existing == null) return NotFound();
+            _mapper.Map(dto, existing);
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "super_admin,admin")]
+        public IActionResult Delete(int id)
+        {
+            var wing = _context.Wings.Find(id);
+            if (wing == null) return NotFound();
+            _context.Wings.Remove(wing);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

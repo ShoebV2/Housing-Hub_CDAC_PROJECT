@@ -1,0 +1,32 @@
+﻿using FluentValidation;
+using HousingHubBackend.Dtos.Visitor;
+
+namespace HousingHubBackend.Validators
+{
+    public class VisitorDtoValidator : AbstractValidator<VisitorDto>
+    {
+        public VisitorDtoValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.VisitorType).NotEmpty();
+        }
+    }
+
+    public class CreateVisitorDtoValidator : AbstractValidator<CreateVisitorDto>
+    {
+        public CreateVisitorDtoValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.VisitorType).NotEmpty();
+        }
+    }
+
+    public class UpdateVisitorDtoValidator : AbstractValidator<UpdateVisitorDto>
+    {
+        public UpdateVisitorDtoValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.VisitorType).NotEmpty();
+        }
+    }
+}

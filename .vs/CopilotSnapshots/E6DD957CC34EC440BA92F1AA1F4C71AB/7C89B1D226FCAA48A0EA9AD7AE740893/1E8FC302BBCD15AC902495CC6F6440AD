@@ -1,0 +1,21 @@
+﻿using HousingHubBackend.Services.Interfaces;
+using HousingHubBackend.Data;
+using System.Diagnostics;
+
+namespace HousingHubBackend.Services.Implementations
+{
+    public class NotificationService : INotificationService
+    {
+        private readonly HousingHubDBContext _context;
+        public NotificationService(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+
+        public void SendNotification(string to, string subject, string message)
+        {
+            // For demonstration, just log the notification. Replace with email/SMS logic as needed.
+            Debug.WriteLine($"Notification to: {to}, Subject: {subject}, Message: {message}");
+        }
+    }
+}

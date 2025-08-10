@@ -1,0 +1,141 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos.Maintenance;
+using AutoMapper;
+using FluentValidation;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class MaintenanceController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<MaintenanceBillDto> _billValidator;
+        private readonly IValidator<MaintenanceFeeDto> _feeValidator;
+
+        public MaintenanceController(
+            HousingHubDBContext context,
+            IMapper mapper,
+            IValidator<MaintenanceBillDto> billValidator,
+            IValidator<MaintenanceFeeDto> feeValidator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _billValidator = billValidator;
+            _feeValidator = feeValidator;
+        }
+
+        // MaintenanceBill endpoints
+        [HttpGet("bills")]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult GetAllBills()
+        {
+            var bills = _context.MaintenanceBills.ToList();
+            var dtos = _mapper.Map<IEnumerable<MaintenanceBillDto>>(bills);
+            return Ok(dtos);
+        }
+
+        [HttpGet("bills/{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult GetBill(int id)
+        {
+            var bill = _context.MaintenanceBills.Find(id);
+            if (bill == null) return NotFound();
+            return Ok(_mapper.Map<MaintenanceBillDto>(bill));
+        }
+
+        [HttpPost("bills")]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult CreateBill([FromBody] MaintenanceBillDto dto)
+        {
+        
+            var bill = _mapper.Map<MaintenanceBill>(dto);
+            _context.MaintenanceBills.Add(bill);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(GetBill), new { id = bill.Mbid }, _mapper.Map<MaintenanceBillDto>(bill));
+        }
+
+        [HttpPut("bills/{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult UpdateBill(int id, [FromBody] MaintenanceBillDto dto)
+        {
+       
+            var existing = _context.MaintenanceBills.Find(id);
+            if (existing == null) return NotFound();
+            _mapper.Map(dto, existing);
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("bills/{id}")]
+        [Authorize(Roles = "super_admin,admin")]
+        public IActionResult DeleteBill(int id)
+        {
+            var bill = _context.MaintenanceBills.Find(id);
+            if (bill == null) return NotFound();
+            _context.MaintenanceBills.Remove(bill);
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        // MaintenanceFee endpoints
+        [HttpGet("fees")]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult GetAllFees()
+        {
+            var fees = _context.MaintenanceFees.ToList();
+            var dtos = _mapper.Map<IEnumerable<MaintenanceFeeDto>>(fees);
+            return Ok(dtos);
+        }
+
+        [HttpGet("fees/{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult GetFee(int id)
+        {
+            var fee = _context.MaintenanceFees.Find(id);
+            if (fee == null) return NotFound();
+            return Ok(_mapper.Map<MaintenanceFeeDto>(fee));
+        }
+
+        [HttpPost("fees")]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult CreateFee([FromBody] MaintenanceFeeDto dto)
+        {
+        
+            var fee = _mapper.Map<MaintenanceFee>(dto);
+            _context.MaintenanceFees.Add(fee);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(GetFee), new { id = fee.Mfid }, _mapper.Map<MaintenanceFeeDto>(fee));
+        }
+
+        [HttpPut("fees/{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult UpdateFee(int id, [FromBody] MaintenanceFeeDto dto)
+        {
+        
+            var existing = _context.MaintenanceFees.Find(id);
+            if (existing == null) return NotFound();
+            _mapper.Map(dto, existing);
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("fees/{id}")]
+        [Authorize(Roles = "super_admin,admin")]
+        public IActionResult DeleteFee(int id)
+        {
+            var fee = _context.MaintenanceFees.Find(id);
+            if (fee == null) return NotFound();
+            _context.MaintenanceFees.Remove(fee);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

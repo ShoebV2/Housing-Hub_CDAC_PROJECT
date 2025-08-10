@@ -1,0 +1,56 @@
+﻿using FluentValidation;
+using HousingHubBackend.Dtos;
+
+namespace HousingHubBackend.Validators
+{
+    public class VisitorDtoValidator : AbstractValidator<VisitorDto>
+    {
+        public VisitorDtoValidator()
+        {
+            RuleFor(x => x.Name)
+                .NotEmpty().WithMessage("Name is required");
+            RuleFor(x => x.VisitorType)
+                .NotEmpty().WithMessage("VisitorType is required");
+            RuleFor(x => x.Phone)
+                .NotEmpty().WithMessage("Phone is required");
+            RuleFor(x => x.VehicleNo)
+                .NotEmpty().WithMessage("VehicleNo is required");
+            RuleFor(x => x.Purpose)
+                .NotEmpty().WithMessage("Purpose is required");
+        }
+    }
+
+    public class CreateVisitorDtoValidator : AbstractValidator<CreateVisitorDto>
+    {
+        public CreateVisitorDtoValidator()
+        {
+            RuleFor(x => x.Name)
+                .NotEmpty().WithMessage("Name is required");
+            RuleFor(x => x.VisitorType)
+                .NotEmpty().WithMessage("VisitorType is required");
+            RuleFor(x => x.Phone)
+                .NotEmpty().WithMessage("Phone is required");
+            RuleFor(x => x.VehicleNo)
+                .NotEmpty().WithMessage("VehicleNo is required");
+            RuleFor(x => x.Purpose)
+                .NotEmpty().WithMessage("Purpose is required");
+        }
+    }
+
+    public class UpdateVisitorDtoValidator : AbstractValidator<UpdateVisitorDto>
+    {
+        public UpdateVisitorDtoValidator()
+        {
+            RuleFor(x => x.Name)
+                .NotEmpty().WithMessage("Name is required");
+            RuleFor(x => x.VisitorType)
+                .NotEmpty().WithMessage("VisitorType is required");
+            RuleFor(x => x.Phone)
+                .NotEmpty().WithMessage("Phone is required");
+            RuleFor(x => x.VehicleNo)
+                .NotEmpty().WithMessage("VehicleNo is required");
+            RuleFor(x => x.Purpose)
+                .NotEmpty().WithMessage("Purpose is required");
+        }
+    }
+}

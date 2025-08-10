@@ -1,0 +1,22 @@
+﻿using FluentValidation;
+using HousingHubBackend.Dtos;
+
+namespace HousingHubBackend.Validators
+{
+    public class SocietyDtoValidator : AbstractValidator<SocietyDto>
+    {
+        public SocietyDtoValidator()
+        {
+            RuleFor(x => x.Name)
+                .NotEmpty().WithMessage("Name is required");
+            RuleFor(x => x.Address)
+                .NotEmpty().WithMessage("Address is required");
+            RuleFor(x => x.State)
+                .NotEmpty().WithMessage("State is required");
+            RuleFor(x => x.Country)
+                .NotEmpty().WithMessage("Country is required");
+            RuleFor(x => x.City)
+                .NotEmpty().WithMessage("City is required");
+        }
+    }
+}

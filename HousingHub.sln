@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36310.24
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HousingHubBackend", "HousingHubBackend\HousingHubBackend.csproj", "{37B38E10-A374-4C6E-976E-021FAE8D9932}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "housinghub-frontend", "housinghub-frontend\housinghub-frontend.esproj", "{604A81FC-D42A-648B-20D6-C1D1D479E2C5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{37B38E10-A374-4C6E-976E-021FAE8D9932}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37B38E10-A374-4C6E-976E-021FAE8D9932}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37B38E10-A374-4C6E-976E-021FAE8D9932}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37B38E10-A374-4C6E-976E-021FAE8D9932}.Release|Any CPU.Build.0 = Release|Any CPU
+		{604A81FC-D42A-648B-20D6-C1D1D479E2C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{604A81FC-D42A-648B-20D6-C1D1D479E2C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{604A81FC-D42A-648B-20D6-C1D1D479E2C5}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{604A81FC-D42A-648B-20D6-C1D1D479E2C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{604A81FC-D42A-648B-20D6-C1D1D479E2C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{604A81FC-D42A-648B-20D6-C1D1D479E2C5}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {47F5AA30-E554-40FD-8C6E-CEBA6E9647DC}
+	EndGlobalSection
+EndGlobal

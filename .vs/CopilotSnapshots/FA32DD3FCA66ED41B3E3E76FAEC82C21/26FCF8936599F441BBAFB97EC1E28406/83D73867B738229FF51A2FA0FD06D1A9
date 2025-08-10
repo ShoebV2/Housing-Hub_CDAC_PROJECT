@@ -1,0 +1,20 @@
+﻿using Microsoft.AspNetCore.SignalR;
+using System.Threading.Tasks;
+
+namespace HousingHubBackend.Hubs
+{
+    public class NotificationHub : Hub
+    {
+        // Send notification to a specific user (by userId or email)
+        public async Task SendToUser(string userId, string message)
+        {
+            await Clients.User(userId).SendAsync("ReceiveNotification", message);
+        }
+
+        // Send notification to all users in a group (e.g., residents of a flat/wing)
+        public async Task SendToGroup(string groupName, string message)
+        {
+            await Clients.Group(groupName).SendAsync("ReceiveNotification", message);
+        }
+    }
+}

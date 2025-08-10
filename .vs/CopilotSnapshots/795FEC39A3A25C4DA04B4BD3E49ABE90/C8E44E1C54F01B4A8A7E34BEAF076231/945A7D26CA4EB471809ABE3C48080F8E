@@ -1,0 +1,96 @@
+﻿using AutoMapper;
+using FluentValidation;
+using HousingHubBackend.Data;
+using HousingHubBackend.Dtos;
+using HousingHubBackend.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UsersController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<UserAccountDto> _validator;
+        private readonly IValidator<CreateUserAccountDto> _createValidator;
+        private readonly IValidator<UpdateUserAccountDto> _updateValidator;
+
+        public UsersController(HousingHubDBContext context, IMapper mapper, IValidator<UserAccountDto> validator, IValidator<CreateUserAccountDto> createValidator, IValidator<UpdateUserAccountDto> updateValidator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _validator = validator;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult GetAll()
+        {
+            var users = _context.UserAccounts.ToList();
+            var dtos = _mapper.Map<IEnumerable<UserAccountDto>>(users);
+            return Ok(dtos);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var user = _context.UserAccounts.Find(id);
+            if (user == null) return NotFound();
+            return Ok(_mapper.Map<UserAccountDto>(user));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "super_admin,admin")]
+        public IActionResult Create([FromBody] CreateUserAccountDto dto)
+        {
+            var validation = _createValidator.Validate(dto);
+            if (!validation.IsValid)
+                return BadRequest(validation.Errors);
+            var user = _mapper.Map<UserAccount>(dto);
+            // Hash password
+            var passwordHasher = new PasswordHasher<UserAccount>();
+            user.Password = passwordHasher.HashPassword(user, dto.Password);
+            _context.UserAccounts.Add(user);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(Get), new { id = user.UserId }, _mapper.Map<UserAccountDto>(user));
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "super_admin,admin")]
+        public IActionResult Update(int id, [FromBody] UpdateUserAccountDto dto)
+        {
+            if (id != dto.UserId)
+                return BadRequest("UserId in URL and body must match.");
+            var validation = _updateValidator.Validate(dto);
+            if (!validation.IsValid)
+                return BadRequest(validation.Errors);
+            var existing = _context.UserAccounts.Find(id);
+            if (existing == null) return NotFound();
+            _mapper.Map(dto, existing);
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "super_admin,admin")]
+        public IActionResult Delete(int id)
+        {
+            var user = _context.UserAccounts.Find(id);
+            if (user == null) return NotFound();
+            _context.UserAccounts.Remove(user);
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        //For Hashing exsisting passwords
+        [HttpPost("hash-all-passwords")]
+        [Authorize

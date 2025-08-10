@@ -1,0 +1,14 @@
+﻿using AutoMapper;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos.Flat;
+
+namespace HousingHubBackend.Mapping
+{
+    public class FlatProfile : Profile
+    {
+        public FlatProfile()
+        {
+            CreateMap<Flat, FlatDto>().ReverseMap();
+        }
+    }
+}

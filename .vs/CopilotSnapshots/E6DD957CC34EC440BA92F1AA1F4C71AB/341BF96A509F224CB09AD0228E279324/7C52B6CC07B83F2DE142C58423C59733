@@ -1,0 +1,11 @@
+﻿namespace HousingHubBackend.Dtos.Wing
+{
+    public class WingDto
+    {
+        public int WingId { get; set; }
+        public string Name { get; set; }
+        public int? TotalFloors { get; set; }
+        public int? FlatsPerFloor { get; set; }
+        public int? SocietyId { get; set; }
+    }
+}

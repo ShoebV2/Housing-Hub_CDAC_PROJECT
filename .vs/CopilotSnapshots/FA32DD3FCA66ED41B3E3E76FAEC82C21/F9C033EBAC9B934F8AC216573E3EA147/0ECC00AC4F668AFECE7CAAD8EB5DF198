@@ -1,0 +1,14 @@
+﻿using FluentValidation;
+using HousingHubBackend.Dtos.Maintenance;
+
+namespace HousingHubBackend.Validators
+{
+    public class MaintenanceBillDtoValidator : AbstractValidator<MaintenanceBillDto>
+    {
+        public MaintenanceBillDtoValidator()
+        {
+            RuleFor(x => x.FlatId).NotNull().WithMessage("FlatId is required");
+            RuleFor(x => x.Amount).NotNull().WithMessage("Amount is required");
+        }
+    }
+    public class Maintenance

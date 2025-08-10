@@ -1,0 +1,129 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using System.Linq;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class MaintenanceController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        public MaintenanceController(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+
+        // MaintenanceBill endpoints
+        [HttpGet("bills")]
+        [Authorize(Roles = "Super admin,admin,security staff")]
+        public IActionResult GetAllBills()
+        {
+            return Ok(_context.MaintenanceBills.ToList());
+        }
+
+        [HttpGet("bills/{id}")]
+        [Authorize(Roles = "Super admin,admin,security staff,resident")]
+        public IActionResult GetBill(int id)
+        {
+            var bill = _context.MaintenanceBills.Find(id);
+            if (bill == null) return NotFound();
+            return Ok(bill);
+        }
+
+        [HttpPost("bills")]
+        [Authorize(Roles = "Super admin,admin,security staff")]
+        public IActionResult CreateBill([FromBody] MaintenanceBill bill)
+        {
+            _context.MaintenanceBills.Add(bill);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(GetBill), new { id = bill.Mbid }, bill);
+        }
+
+        [HttpPut("bills/{id}")]
+        [Authorize(Roles = "Super admin,admin,security staff")]
+        public IActionResult UpdateBill(int id, [FromBody] MaintenanceBill bill)
+        {
+            var existing = _context.MaintenanceBills.Find(id);
+            if (existing == null) return NotFound();
+            existing.FlatId = bill.FlatId;
+            existing.Mfid = bill.Mfid;
+            existing.PeriodStart = bill.PeriodStart;
+            existing.PeriodEnd = bill.PeriodEnd;
+            existing.DueDate = bill.DueDate;
+            existing.Amount = bill.Amount;
+            existing.PaidDate = bill.PaidDate;
+            existing.Paid = bill.Paid;
+            existing.TransactionId = bill.TransactionId;
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("bills/{id}")]
+        [Authorize(Roles = "Super admin,admin")]
+        public IActionResult DeleteBill(int id)
+        {
+            var bill = _context.MaintenanceBills.Find(id);
+            if (bill == null) return NotFound();
+            _context.MaintenanceBills.Remove(bill);
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        // MaintenanceFee endpoints
+        [HttpGet("fees")]
+        [Authorize(Roles = "Super admin,admin,security staff")]
+        public IActionResult GetAllFees()
+        {
+            return Ok(_context.MaintenanceFees.ToList());
+        }
+
+        [HttpGet("fees/{id}")]
+        [Authorize(Roles = "Super admin,admin,security staff,resident")]
+        public IActionResult GetFee(int id)
+        {
+            var fee = _context.MaintenanceFees.Find(id);
+            if (fee == null) return NotFound();
+            return Ok(fee);
+        }
+
+        [HttpPost("fees")]
+        [Authorize(Roles = "Super admin,admin,security staff")]
+        public IActionResult CreateFee([FromBody] MaintenanceFee fee)
+        {
+            _context.MaintenanceFees.Add(fee);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(GetFee), new { id = fee.Mfid }, fee);
+        }
+
+        [HttpPut("fees/{id}")]
+        [Authorize(Roles = "Super admin,admin,security staff")]
+        public IActionResult UpdateFee(int id, [FromBody] MaintenanceFee fee)
+        {
+            var existing = _context.MaintenanceFees.Find(id);
+            if (existing == null) return NotFound();
+            existing.WingId = fee.WingId;
+            existing.RatePerSqft = fee.RatePerSqft;
+            existing.EffectiveFrom = fee.EffectiveFrom;
+            existing.EffectiveTo = fee.EffectiveTo;
+            existing.IsActive = fee.IsActive;
+            existing.CreatedBy = fee.CreatedBy;
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("fees/{id}")]
+        [Authorize(Roles = "Super admin,admin")]
+        public IActionResult DeleteFee(int id)
+        {
+            var fee = _context.MaintenanceFees.Find(id);
+            if (fee == null) return NotFound();
+            _context.MaintenanceFees.Remove(fee);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

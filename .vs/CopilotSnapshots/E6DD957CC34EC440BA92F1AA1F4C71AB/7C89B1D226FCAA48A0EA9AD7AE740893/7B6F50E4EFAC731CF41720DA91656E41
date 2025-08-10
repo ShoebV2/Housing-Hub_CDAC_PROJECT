@@ -1,0 +1,73 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using System.Linq;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class AmenitiesController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        public AmenitiesController(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Super admin,admin,security staff")]
+        public IActionResult GetAll()
+        {
+            return Ok(_context.Amenities.ToList());
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Super admin,admin,security staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var amenity = _context.Amenities.Find(id);
+            if (amenity == null) return NotFound();
+            return Ok(amenity);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Super admin,admin,security staff")]
+        public IActionResult Create([FromBody] Amenity amenity)
+        {
+            _context.Amenities.Add(amenity);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(Get), new { id = amenity.AmenityId }, amenity);
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Super admin,admin,security staff")]
+        public IActionResult Update(int id, [FromBody] Amenity amenity)
+        {
+            var existing = _context.Amenities.Find(id);
+            if (existing == null) return NotFound();
+            existing.SocietyId = amenity.SocietyId;
+            existing.Name = amenity.Name;
+            existing.Description = amenity.Description;
+            existing.HourlyRate = amenity.HourlyRate;
+            existing.MaxCapacity = amenity.MaxCapacity;
+            existing.OpeningTime = amenity.OpeningTime;
+            existing.ClosingTime = amenity.ClosingTime;
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Super admin,admin")]
+        public IActionResult Delete(int id)
+        {
+            var amenity = _context.Amenities.Find(id);
+            if (amenity == null) return NotFound();
+            _context.Amenities.Remove(amenity);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

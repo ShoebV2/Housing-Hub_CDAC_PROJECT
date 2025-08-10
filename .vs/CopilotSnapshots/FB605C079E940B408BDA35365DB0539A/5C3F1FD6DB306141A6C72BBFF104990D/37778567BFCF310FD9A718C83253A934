@@ -1,0 +1,101 @@
+﻿import React, { useState } from 'react';
+import { Link, Navigate } from 'react-router-dom';
+import { Building2, Mail, Lock } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
+import Input from '../../components/UI/Input';
+import Button from '../../components/UI/Button';
+
+const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { user, login } = useAuth();
+
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    const success = await login(email, password);
+    if (!success) {
+      setError('Invalid email or password');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center mb-4">
+            <Building2 className="h-12 w-12 text-blue-600" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900">HousingHub</h2>
+          <p className="text-gray-600 mt-2">Sign in to your account</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+              {error}
+            </div>
+          )}
+
+          <div className="relative flex flex-col">
+            <label htmlFor="login-email" className="font-semibold mb-1">Email</label>
+            <Mail className="absolute left-3 top-10 h-4 w-4 text-gray-400" />
+            <Input
+              id="login-email"
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="pl-10"
+              required
+            />
+          </div>
+
+          <div className="relative flex flex-col">
+            <label htmlFor="login-password" className="font-semibold mb-1">Password</label>
+            <Lock className="absolute left-3 top-10 h-4 w-4 text-gray-400" />
+            <Input
+              id="login-password"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="pl-10"
+              required
+            />
+          </div>
+
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? 'Signing in...' : 'Sign In'}
+          </Button>
+        </form>
+
+        <div className="mt-8 text-center space-y-4">
+          <p className="text-sm text-gray-600">
+            Don't have an account?{' '}
+            <Link to="/register" className="text-blue-600 hover:text-blue-700 font-medium">
+              Register here
+            </Link>
+          </p>
+          <p className="text-sm text-gray-600">
+            New Society?{' '}
+            <Link to="/register-society" className="text-blue-600 hover:text-blue-700 font-medium">
+              Register Society
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default LoginPage;

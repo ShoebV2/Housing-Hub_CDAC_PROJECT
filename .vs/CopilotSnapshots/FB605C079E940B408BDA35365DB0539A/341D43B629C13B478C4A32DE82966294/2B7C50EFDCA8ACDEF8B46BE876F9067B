@@ -1,0 +1,191 @@
+﻿import React, { useEffect, useState } from 'react';
+import { API_BASE_URL } from '../config';
+import { useAuth } from '../contexts/AuthContext';
+import Button from '../components/UI/Button';
+import Input from '../components/UI/Input';
+
+const emptyForm = {
+    name: '',
+    description: '',
+    hourlyRate: '',
+    maxCapacity: '',
+    openingTime: '',
+    closingTime: ''
+};
+
+const AmenitiesPage = () => {
+    const { user } = useAuth();
+    const [amenities, setAmenities] = useState([]);
+    const [form, setForm] = useState(emptyForm);
+    const [editingId, setEditingId] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    if (!user || (user.role !== 'admin' && user.role !== 'resident')) {
+        return <div>Access Denied. You don't have permission to access this page.</div>;
+    }
+
+    const getAuthHeaders = () => ({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+    });
+
+    const fetchAmenities = async () => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/amenities`, { headers: getAuthHeaders() });
+            if (!res.ok) throw new Error('Failed to load amenities');
+            const data = await res.json();
+            setAmenities(data);
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    useEffect(() => { fetchAmenities(); }, []);
+
+    const handleChange = e => {
+        const { name, value } = e.target;
+        setForm({ ...form, [name]: value });
+    };
+
+    const handleSubmit = async e => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+        try {
+            const payload = {
+                name: form.name,
+                description: form.description,
+                hourlyRate: parseFloat(form.hourlyRate),
+                maxCapacity: parseInt(form.maxCapacity, 10),
+                openingTime: form.openingTime,
+                closingTime: form.closingTime,
+                societyId: user.societyId
+            };
+            let url = `${API_BASE_URL}/amenities`;
+            let method = 'POST';
+            if (editingId) {
+                url = `${API_BASE_URL}/amenities/${editingId}`;
+                method = 'PUT';
+            }
+            const res = await fetch(url, {
+                method,
+                headers: getAuthHeaders(),
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error('Failed to save amenity');
+            setForm(emptyForm);
+            setEditingId(null);
+            fetchAmenities();
+        } catch {
+            setError('Failed to save amenity');
+        }
+        setLoading(false);
+    };
+
+    const handleEdit = amenity => {
+        setForm({
+            name: amenity.name,
+            description: amenity.description || '',
+            hourlyRate: amenity.hourlyRate || '',
+            maxCapacity: amenity.maxCapacity || '',
+            openingTime: amenity.openingTime || '',
+            closingTime: amenity.closingTime || ''
+        });
+        setEditingId(amenity.amenityId);
+    };
+
+    const handleDelete = async id => {
+        if (!window.confirm('Delete this amenity?')) return;
+        setLoading(true);
+        try {
+            await fetch(`${API_BASE_URL}/amenities/${id}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders()
+            });
+            fetchAmenities();
+        } catch {
+            setError('Failed to delete amenity');
+        }
+        setLoading(false);
+    };
+
+    return (
+        <div className="max-w-5xl mx-auto py-8 px-4">
+            <h1 className="text-2xl font-bold mb-6">Amenities</h1>
+            <div className="bg-white rounded-lg shadow p-6">
+                {user.role === 'admin' && (
+                    <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 mb-4 items-end">
+                        <div className="flex flex-col">
+                            <label htmlFor="name" className="mb-1 font-medium text-gray-700">Name</label>
+                            <Input name="name" id="name" value={form.name} onChange={handleChange} placeholder="Name" required />
+                        </div>
+                        <div className="flex flex-col">
+                            <label htmlFor="description" className="mb-1 font-medium text-gray-700">Description</label>
+                            <Input name="description" id="description" value={form.description} onChange={handleChange} placeholder="Description" />
+                        </div>
+                        <div className="flex flex-col">
+                            <label htmlFor="hourlyRate" className="mb-1 font-medium text-gray-700">Hourly Rate</label>
+                            <Input name="hourlyRate" id="hourlyRate" value={form.hourlyRate} onChange={handleChange} placeholder="Hourly Rate" type="number" min="0" step="0.01" required />
+                        </div>
+                        <div className="flex flex-col">
+                            <label htmlFor="maxCapacity" className="mb-1 font-medium text-gray-700">Max Capacity</label>
+                            <Input name="maxCapacity" id="maxCapacity" value={form.maxCapacity} onChange={handleChange} placeholder="Max Capacity" type="number" min="1" required />
+                        </div>
+                        <div className="flex flex-col">
+                            <label htmlFor="openingTime" className="mb-1 font-medium text-gray-700">Opening Time</label>
+                            <Input name="openingTime" id="openingTime" value={form.openingTime} onChange={handleChange} placeholder="Opening Time (HH:mm)" type="time" required />
+                        </div>
+                        <div className="flex flex-col">
+                            <label htmlFor="closingTime" className="mb-1 font-medium text-gray-700">Closing Time</label>
+                            <Input name="closingTime" id="closingTime" value={form.closingTime} onChange={handleChange} placeholder="Closing Time (HH:mm)" type="time" required />
+                        </div>
+                        <Button type="submit" variant="primary" disabled={loading}>{editingId ? 'Update' : 'Add'}</Button>
+                        {editingId && (
+                            <Button type="button" variant="secondary" onClick={() => { setEditingId(null); setForm(emptyForm); }}>Cancel</Button>
+                        )}
+                    </form>
+                )}
+                {error && <div className="text-red-600 mb-2">{error}</div>}
+                <div className="overflow-x-auto">
+                    <table className="min-w-full border text-sm">
+                        <thead>
+                            <tr className="bg-gray-100">
+                                <th className="px-4 py-2 border">Name</th>
+                                <th className="px-4 py-2 border">Description</th>
+                                <th className="px-4 py-2 border">Hourly Rate</th>
+                                <th className="px-4 py-2 border">Max Capacity</th>
+                                <th className="px-4 py-2 border">Opening Time</th>
+                                <th className="px-4 py-2 border">Closing Time</th>
+                                {user.role === 'admin' && <th className="px-4 py-2 border">Actions</th>}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {amenities.map(a => (
+                                <tr key={a.amenityId}>
+                                    <td className="border px-4 py-2">{a.name}</td>
+                                    <td className="border px-4 py-2">{a.description}</td>
+                                    <td className="border px-4 py-2">{a.hourlyRate}</td>
+                                    <td className="border px-4 py-2">{a.maxCapacity}</td>
+                                    <td className="border px-4 py-2">{a.openingTime}</td>
+                                    <td className="border px-4 py-2">{a.closingTime}</td>
+                                    {user.role === 'admin' && (
+                                        <td className="border px-4 py-2 space-x-2">
+                                            <Button type="button" variant="secondary" onClick={() => handleEdit(a)} size="sm">Edit</Button>
+                                            <Button type="button" variant="danger" onClick={() => handleDelete(a.amenityId)} size="sm">Delete</Button>
+                                        </td>
+                                    )}
+                                </tr>
+                            ))}
+                            {amenities.length === 0 && (
+                                <tr><td colSpan={user.role === 'admin' ? 7 : 6} className="text-center py-4">No amenities found.</td></tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default AmenitiesPage;

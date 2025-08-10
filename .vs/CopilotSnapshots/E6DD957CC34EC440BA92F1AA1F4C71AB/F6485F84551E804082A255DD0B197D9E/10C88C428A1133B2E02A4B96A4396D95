@@ -1,0 +1,15 @@
+﻿using HousingHubBackend.Services.Interfaces;
+using HousingHubBackend.Data;
+
+namespace HousingHubBackend.Services.Implementations
+{
+    public class AmenityService : IAmenityService
+    {
+        private readonly HousingHubDBContext _context;
+        public AmenityService(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+        // Implement business logic here
+    }
+}

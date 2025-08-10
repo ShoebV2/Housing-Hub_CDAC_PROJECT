@@ -1,0 +1,27 @@
+﻿namespace HousingHubBackend.Dtos
+{
+    public class WingDto
+    {
+        public int WingId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public int? TotalFloors { get; set; }
+        public int? FlatsPerFloor { get; set; }
+        public int? SocietyId { get; set; }
+    }
+
+    public class CreateWingDto
+    {
+        public string Name { get; set; } = string.Empty;
+        public int? TotalFloors { get; set; }
+        public int? FlatsPerFloor { get; set; }
+        public int? SocietyId { get; set; }
+    }
+
+    public class UpdateWingDto
+    {
+        public string Name { get; set; } = string.Empty;
+        public int? TotalFloors { get; set; }
+        public int? FlatsPerFloor { get; set; }
+        public int? SocietyId { get; set; }
+    }
+}

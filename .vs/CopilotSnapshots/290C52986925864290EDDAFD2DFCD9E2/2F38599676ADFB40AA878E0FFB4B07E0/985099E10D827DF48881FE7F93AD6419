@@ -1,0 +1,121 @@
+﻿using AutoMapper;
+using FluentValidation;
+using HousingHubBackend.Data;
+using HousingHubBackend.Dtos;
+using HousingHubBackend.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ComplaintsController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<CreateComplaintDto> _createValidator;
+        private readonly IValidator<UpdateComplaintDto> _updateValidator;
+
+        public ComplaintsController(
+            HousingHubDBContext context,
+            IMapper mapper,
+            IValidator<CreateComplaintDto> createValidator,
+            IValidator<UpdateComplaintDto> updateValidator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "admin,security_staff,resident")]
+        public IActionResult GetAll([FromQuery] int? wingId = null)
+        {
+            var userEmail = User.FindFirst("email")?.Value ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Email == userEmail);
+            if (user == null) return Unauthorized();
+
+            // Restrict to own society and ensure flat.Wing is not null
+            var flatsQuery = _context.Flats.Where(f => f.Wing != null && f.Wing.SocietyId == user.SocietyId);
+            if (user.Role == "admin" && wingId.HasValue)
+            {
+                flatsQuery = flatsQuery.Where(f => f.WingId == wingId.Value);
+            }
+            var flats = flatsQuery.Select(f => f.FlatId).ToList();
+            var complaintsFiltered = _context.Complaints
+                .Include(c => c.RaisedByNavigation)
+                .Where(c => flats.Contains(c.FlatId ?? 0)).ToList();
+            var dtosFiltered = _mapper.Map<IEnumerable<ComplaintDto>>(complaintsFiltered);
+            return Ok(dtosFiltered);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "admin,security_staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var userEmail = User.FindFirst("email")?.Value ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Email == userEmail);
+            if (user == null) return Unauthorized();
+            var complaint = _context.Complaints
+                .Include(c => c.RaisedByNavigation)
+                .FirstOrDefault(c => c.ComplaintId == id);
+            if (complaint == null) return NotFound();
+            // Restrict to own society and ensure flat.Wing is not null
+            var flat = _context.Flats.FirstOrDefault(f => f.FlatId == complaint.FlatId);
+            if (flat == null || flat.Wing == null || flat.Wing.SocietyId != user.SocietyId) return Forbid();
+            return Ok(_mapper.Map<ComplaintDto>(complaint));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "resident")]
+        public IActionResult Create([FromBody] CreateComplaintDto dto)
+        {
+            var userEmail = User.FindFirst("email")?.Value ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Email == userEmail);
+            if (user == null)
+                return BadRequest("User not found.");
+            if (user.FlatId == null)
+                return BadRequest("Resident does not have a flat assigned.");
+
+            // Set resident's own flat
+            dto.FlatId = user.FlatId;
+            dto.RaisedBy = user.UserId;
+            dto.Status = "Pending";
+            dto.CreatedAt = DateTime.UtcNow;
+
+            var complaint = _mapper.Map<Complaint>(dto);
+            _context.Complaints.Add(complaint);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(Get), new { id = complaint.ComplaintId }, _mapper.Map<ComplaintDto>(complaint));
+        }
+
+        [HttpPut("{id}/status")]
+        [Authorize(Roles = "admin")]
+        [Consumes("text/plain")]
+        public IActionResult UpdateStatus(int id, [FromBody] string status)
+        {
+            var userEmail = User.FindFirst("email")?.Value ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Email == userEmail);
+            var complaint = _context.Complaints
+                .Include(c => c.RaisedByNavigation)
+                .FirstOrDefault(c => c.ComplaintId == id);
+            if (complaint == null) return NotFound();
+
+            // Restrict to own society and ensure flat.Wing is not null
+            var flat = _context.Flats.FirstOrDefault(f => f.FlatId == complaint.FlatId);
+            if (flat == null || flat.Wing == null || flat.Wing.SocietyId != user.SocietyId) return Forbid();
+
+            complaint.Status = status;
+            if (status == "Resolved" || status == "Closed")
+                complaint.ResolvedAt = DateTime.UtcNow;
+            _context.SaveChanges();
+            return Ok(_mapper.Map<ComplaintDto>(complaint));
+        }
+    }
+}

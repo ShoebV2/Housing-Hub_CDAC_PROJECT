@@ -1,0 +1,11 @@
+﻿using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+
+namespace HousingHubBackend.Repositories
+{
+    public class FlatRepository : Repository<Flat>, IFlatRepository
+    {
+        public FlatRepository(HousingHubDBContext context) : base(context) { }
+        // Add custom methods if needed
+    }
+}

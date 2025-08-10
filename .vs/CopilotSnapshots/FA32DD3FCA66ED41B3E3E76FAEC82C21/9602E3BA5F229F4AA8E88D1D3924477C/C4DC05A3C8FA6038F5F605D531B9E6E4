@@ -1,0 +1,47 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos.Society;
+using AutoMapper;
+using FluentValidation;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class SocietiesController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<SocietyDto> _validator;
+        public SocietiesController(HousingHubDBContext context, IMapper mapper, IValidator<SocietyDto> validator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _validator = validator;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult GetAll()
+        {
+            var societies = _context.Societies.ToList();
+            var dtos = _mapper.Map<IEnumerable<SocietyDto>>(societies);
+            return Ok(dtos);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var society = _context.Societies.Find(id);
+            if (society == null) return NotFound();
+            return Ok(_mapper.Map<SocietyDto>(society));
+        }
+
+        [HttpPost]
+       

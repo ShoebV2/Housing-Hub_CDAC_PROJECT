@@ -1,0 +1,32 @@
+﻿using FluentValidation;
+using HousingHubBackend.Dtos.Announcement;
+
+namespace HousingHubBackend.Validators
+{
+    public class AnnouncementDtoValidator : AbstractValidator<AnnouncementDto>
+    {
+        public AnnouncementDtoValidator()
+        {
+            RuleFor(x => x.Title).NotEmpty();
+            RuleFor(x => x.Content).NotEmpty();
+        }
+    }
+
+    public class CreateAnnouncementDtoValidator : AbstractValidator<CreateAnnouncementDto>
+    {
+        public CreateAnnouncementDtoValidator()
+        {
+            RuleFor(x => x.Title).NotEmpty();
+            RuleFor(x => x.Content).NotEmpty();
+        }
+    }
+
+    public class UpdateAnnouncementDtoValidator : AbstractValidator<UpdateAnnouncementDto>
+    {
+        public UpdateAnnouncementDtoValidator()
+        {
+            RuleFor(x => x.Title).NotEmpty();
+            RuleFor(x => x.Content).NotEmpty();
+        }
+    }
+}

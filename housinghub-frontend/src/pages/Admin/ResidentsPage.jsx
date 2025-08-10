@@ -1,0 +1,18 @@
+import React, { useState } from 'react';
+import ProtectedRoute from '../../components/ProtectedRoute';
+import ResidentsList from '../../components/Admin/ResidentsList';
+
+const ResidentsPage = () => {
+  return (
+    <ProtectedRoute requiredRoles={['admin']}>
+      <div className="max-w-5xl mx-auto py-8 px-4">
+        <h1 className="text-2xl font-bold mb-6">Residents Management</h1>
+        <div className="bg-white rounded-lg shadow p-6">
+          <ResidentsList />
+        </div>
+      </div>
+    </ProtectedRoute>
+  );
+};
+
+export default ResidentsPage;

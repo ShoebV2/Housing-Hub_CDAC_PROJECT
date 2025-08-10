@@ -1,0 +1,94 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos;
+using AutoMapper;
+using FluentValidation;
+using System.Linq;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.SignalR;
+using HousingHubBackend.Hubs;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class AnnouncementsController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<CreateAnnouncementDto> _createValidator;
+        private readonly IValidator<UpdateAnnouncementDto> _updateValidator;
+        private readonly IHubContext<NotificationHub> _hubContext;
+
+        public AnnouncementsController(
+            HousingHubDBContext context,
+            IMapper mapper,
+            IValidator<CreateAnnouncementDto> createValidator,
+            IValidator<UpdateAnnouncementDto> updateValidator,
+            IHubContext<NotificationHub> hubContext)
+        {
+            _context = context;
+            _mapper = mapper;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
+            _hubContext = hubContext;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult GetAll()
+        {
+            var announcements = _context.Announcements.ToList();
+            var dtos = _mapper.Map<IEnumerable<AnnouncementDto>>(announcements);
+            return Ok(dtos);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var announcement = _context.Announcements.Find(id);
+            if (announcement == null) return NotFound();
+            return Ok(_mapper.Map<AnnouncementDto>(announcement));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult Create([FromBody] CreateAnnouncementDto dto)
+        {
+            var announcement = _mapper.Map<Announcement>(dto);
+            _context.Announcements.Add(announcement);
+            _context.SaveChanges();
+            // Alert all residents about new announcement
+            _hubContext.Clients.Group("residents").SendAsync("ReceiveNotification", $"New announcement: {announcement.Title}");
+            return CreatedAtAction(nameof(Get), new { id = announcement.Aid }, _mapper.Map<AnnouncementDto>(announcement));
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult Update(int id, [FromBody] UpdateAnnouncementDto dto)
+        {
+            var existing = _context.Announcements.Find(id);
+            if (existing == null) return NotFound();
+
+            _mapper.Map(dto, existing);
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "super_admin,admin")]
+        public IActionResult Delete(int id)
+        {
+            var announcement = _context.Announcements.Find(id);
+            if (announcement == null) return NotFound();
+
+            _context.Announcements.Remove(announcement);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

@@ -1,0 +1,16 @@
+﻿using FluentValidation;
+using HousingHubBackend.Dtos.Booking;
+
+namespace HousingHubBackend.Validators
+{
+    public class BookingDtoValidator : AbstractValidator<BookingDto>
+    {
+        public BookingDtoValidator()
+        {
+            RuleFor(x => x.UserId).NotNull();
+            RuleFor(x => x.AmenityId).NotNull();
+            RuleFor(x => x.StartDate).NotNull();
+            RuleFor(x => x.EndDate).NotNull();
+        }
+    }
+}

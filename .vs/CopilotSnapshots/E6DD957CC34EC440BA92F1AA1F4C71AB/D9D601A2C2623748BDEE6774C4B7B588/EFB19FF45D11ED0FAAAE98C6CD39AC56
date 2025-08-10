@@ -1,0 +1,70 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using System.Linq;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class WingsController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        public WingsController(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult GetAll()
+        {
+            return Ok(_context.Wings.ToList());
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff,resident")]
+        public IActionResult Get(int id)
+        {
+            var wing = _context.Wings.Find(id);
+            if (wing == null) return NotFound();
+            return Ok(wing);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult Create([FromBody] Wing wing)
+        {
+            _context.Wings.Add(wing);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(Get), new { id = wing.WingId }, wing);
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "super_admin,admin,security_staff")]
+        public IActionResult Update(int id, [FromBody] Wing wing)
+        {
+            var existing = _context.Wings.Find(id);
+            if (existing == null) return NotFound();
+            existing.Name = wing.Name;
+            existing.TotalFloors = wing.TotalFloors;
+            existing.FlatsPerFloor = wing.FlatsPerFloor;
+            existing.SocietyId = wing.SocietyId;
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "super_admin,admin")]
+        public IActionResult Delete(int id)
+        {
+            var wing = _context.Wings.Find(id);
+            if (wing == null) return NotFound();
+            _context.Wings.Remove(wing);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

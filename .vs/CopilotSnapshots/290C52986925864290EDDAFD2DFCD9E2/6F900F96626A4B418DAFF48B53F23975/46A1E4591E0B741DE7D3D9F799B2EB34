@@ -1,0 +1,216 @@
+﻿import React, { useEffect, useState } from 'react';
+import { API_BASE_URL } from '../config';
+import { useAuth } from '../contexts/AuthContext';
+import Button from '../components/UI/Button';
+import Input from '../components/UI/Input';
+
+const emptyForm = {
+    name: '',
+    address: '',
+    state: '',
+    country: '',
+    city: '',
+    pincode: ''
+};
+
+const SocietiesPage = () => {
+    const { user } = useAuth();
+    const [societies, setSocieties] = useState([]);
+    const [admins, setAdmins] = useState({});
+    const [form, setForm] = useState(emptyForm);
+    const [editingId, setEditingId] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    if (user?.role !== 'super_admin') return <div>Access Denied</div>;
+
+    const getAuthHeaders = () => ({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+    });
+
+    const fetchSocieties = async () => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/societies`, { headers: getAuthHeaders() });
+            if (!res.ok) throw new Error('Failed to load societies');
+            const societiesData = await res.json();
+            setSocieties(societiesData);
+            // Fetch all admins and map by societyId
+            const resAdmins = await fetch(`${API_BASE_URL}/users`, { headers: getAuthHeaders() });
+            let adminsArr = [];
+            if (resAdmins.ok) {
+                adminsArr = await resAdmins.json();
+            }
+            const adminMap = {};
+            societiesData.forEach(society => {
+                const admin = adminsArr.find(a => a.role === 'admin' && a.societyId === society.societyId);
+                adminMap[society.societyId] = admin ? admin.name : '-';
+            });
+            setAdmins(adminMap);
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    useEffect(() => { fetchSocieties(); }, []);
+
+    const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+
+    const handleAdd = async e => {
+        e.preventDefault();
+        setError('');
+        try {
+            const res = await fetch(`${API_BASE_URL}/societies`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify(form)
+            });
+            if (!res.ok) throw new Error('Failed to add society');
+            setForm(emptyForm);
+            fetchSocieties();
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    const handleEdit = society => {
+        setEditingId(society.societyId);
+        setForm({
+            name: society.name,
+            address: society.address,
+            state: society.state,
+            country: society.country,
+            city: society.city,
+            pincode: society.pincode
+        });
+    };
+
+    const handleUpdate = async e => {
+        e.preventDefault();
+        setError('');
+        try {
+            const payload = { ...form, societyId: editingId };
+            const res = await fetch(`${API_BASE_URL}/societies/${editingId}`, {
+                method: 'PUT',
+                headers: getAuthHeaders(),
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error('Failed to update society');
+            setEditingId(null);
+            setForm(emptyForm);
+            fetchSocieties();
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    const handleDelete = async id => {
+        if (!window.confirm('Delete this society?')) return;
+        try {
+            const res = await fetch(`${API_BASE_URL}/societies/${id}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders()
+            });
+            if (!res.ok) throw new Error('Failed to delete society');
+            fetchSocieties();
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    const handleApprove = async (society) => {
+        setError('');
+        try {
+            const payload = {
+                societyId: society.societyId,
+                name: society.name,
+                address: society.address,
+                state: society.state,
+                country: society.country,
+                city: society.city,
+                pincode: society.pincode,
+                isVerified: !society.isVerified // toggle
+            };
+            const res = await fetch(`${API_BASE_URL}/societies/${society.societyId}`, {
+                method: 'PUT',
+                headers: getAuthHeaders(),
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error('Failed to update verification');
+            fetchSocieties();
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    return (
+        <div className="max-w-5xl mx-auto py-8 px-4">
+            <h1 className="text-2xl font-bold mb-6">Societies Management</h1>
+            <div className="bg-white rounded-lg shadow p-6">
+                <form onSubmit={editingId ? handleUpdate : handleAdd} className="flex flex-wrap gap-2 mb-4 items-end">
+                    <Input name="name" value={form.name} onChange={handleChange} placeholder="Name" required />
+                    <Input name="address" value={form.address} onChange={handleChange} placeholder="Address" required />
+                    <Input name="state" value={form.state} onChange={handleChange} placeholder="State" required />
+                    <Input name="country" value={form.country} onChange={handleChange} placeholder="Country" required />
+                    <Input name="city" value={form.city} onChange={handleChange} placeholder="City" required />
+                    <Input name="pincode" value={form.pincode || ''} onChange={handleChange} placeholder="Pincode" required />
+                    <Button type="submit" variant="primary" disabled={loading}>{editingId ? 'Update' : 'Add'}</Button>
+                    {editingId && (
+                        <Button type="button" variant="secondary" onClick={() => { setEditingId(null); setForm(emptyForm); }}>Cancel</Button>
+                    )}
+                </form>
+                {error && <div className="text-red-600 mb-2">{error}</div>}
+                <div className="overflow-x-auto">
+                    <table className="min-w-full border text-sm">
+                        <thead>
+                            <tr className="bg-gray-100">
+                                <th className="px-4 py-2 border">Name</th>
+                                <th className="px-4 py-2 border">Address</th>
+                                <th className="px-4 py-2 border">State</th>
+                                <th className="px-4 py-2 border">Country</th>
+                                <th className="px-4 py-2 border">City</th>
+                                <th className="px-4 py-2 border">Pincode</th>
+                                <th className="px-4 py-2 border">Created At</th>
+                                <th className="px-4 py-2 border">Admin</th>
+                                <th className="px-4 py-2 border">Verified</th>
+                                <th className="px-4 py-2 border">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {societies.map(society => (
+                                <tr key={society.societyId}>
+                                    <td className="border px-4 py-2">{society.name}</td>
+                                    <td className="border px-4 py-2">{society.address}</td>
+                                    <td className="border px-4 py-2">{society.state}</td>
+                                    <td className="border px-4 py-2">{society.country}</td>
+                                    <td className="border px-4 py-2">{society.city}</td>
+                                    <td className="border px-4 py-2">{society.pincode}</td>
+                                    <td className="border px-4 py-2">{society.createdAt ? new Date(society.createdAt).toLocaleString() : '-'}</td>
+                                    <td className="border px-4 py-2">{admins[society.societyId] || '-'}</td>
+                                    <td className="border px-4 py-2">{society.isVerified ? 'Yes' : 'No'}</td>
+                                    <td className="border px-4 py-2 space-x-2">
+                                        <Button type="button" variant="secondary" onClick={() => handleEdit(society)} size="sm">Edit</Button>
+                                        <Button type="button" variant="danger" onClick={() => handleDelete(society.societyId)} size="sm">Delete</Button>
+                                        <Button
+                                            type="button"
+                                            size="sm"
+                                            variant={society.isVerified ? 'secondary' : 'success'}
+                                            onClick={() => handleApprove(society)}
+                                        >
+                                            {society.isVerified ? 'Unverify' : 'Verify'}
+                                        </Button>
+                                    </td>
+                                </tr>
+                            ))}
+                            {societies.length === 0 && (
+                                <tr><td colSpan={10} className="text-center py-4">No societies found.</td></tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default SocietiesPage;

@@ -1,0 +1,15 @@
+﻿using HousingHubBackend.Services.Interfaces;
+using HousingHubBackend.Data;
+
+namespace HousingHubBackend.Services.Implementations
+{
+    public class FlatService : IFlatService
+    {
+        private readonly HousingHubDBContext _context;
+        public FlatService(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+        // Implement business logic here
+    }
+}

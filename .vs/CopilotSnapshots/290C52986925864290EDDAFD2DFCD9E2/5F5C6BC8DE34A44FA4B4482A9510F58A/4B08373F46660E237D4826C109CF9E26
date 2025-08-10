@@ -1,0 +1,71 @@
+﻿using AutoMapper;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos;
+using HousingHubBackend.Dtos.Auth;
+using HousingHubBackend.Dtos.Maintenance;
+
+namespace HousingHubBackend.Mapping
+{
+    public class EntityProfiles : Profile
+    {
+        public EntityProfiles()
+        {
+            // Amenity mappings
+            CreateMap<Amenity, AmenityDto>().ReverseMap();
+            CreateMap<Amenity, CreateAmenityDto>().ReverseMap();
+            CreateMap<Amenity, UpdateAmenityDto>().ReverseMap();
+
+            // Booking mappings
+            CreateMap<Booking, BookingDto>().ReverseMap();
+            CreateMap<Booking, CreateBookingDto>().ReverseMap();
+            CreateMap<Booking, UpdateBookingDto>().ReverseMap();
+
+            // Complaint mappings
+            CreateMap<Complaint, ComplaintDto>()
+                .ForMember(dest => dest.FlatNumber, opt => opt.MapFrom(src => src.Flat != null ? src.Flat.FlatNumber : null))
+                .ForMember(dest => dest.WingName, opt => opt.MapFrom(src => src.Flat != null && src.Flat.Wing != null ? src.Flat.Wing.Name : null))
+                .ForMember(dest => dest.RaisedByName, opt => opt.MapFrom(src => src.UserAccount != null ? src.UserAccount.Name : null));
+            CreateMap<Complaint, CreateComplaintDto>().ReverseMap();
+            CreateMap<Complaint, UpdateComplaintDto>().ReverseMap();
+
+            // MaintenanceBill mappings
+            CreateMap<MaintenanceBill, MaintenanceBillDto>().ReverseMap();
+            CreateMap<MaintenanceFee, MaintenanceFeeDto>().ReverseMap();
+
+            // Society mappings
+            CreateMap<Society, SocietyDto>().ReverseMap();
+            CreateMap<Society, CreateSocietyDto>().ReverseMap();
+            CreateMap<Society, UpdateSocietyDto>().ReverseMap();
+
+            // UserAccount mappings
+            CreateMap<UserAccount, UserAccountDto>()
+                .ForMember(dest => dest.SocietyId, opt => opt.MapFrom(src => src.SocietyId))
+                .ForMember(dest => dest.FlatId, opt => opt.MapFrom(src => src.FlatId))
+                .ForMember(dest => dest.IsVerified, opt => opt.MapFrom(src => src.IsVerified))
+                .ReverseMap();
+            CreateMap<UserAccount, CreateUserAccountDto>().ReverseMap();
+            CreateMap<UserAccount, UpdateUserAccountDto>().ReverseMap();
+
+            // Visitor mappings
+            CreateMap<Visitor, VisitorDto>().ReverseMap();
+            CreateMap<Visitor, CreateVisitorDto>().ReverseMap();
+            CreateMap<Visitor, UpdateVisitorDto>().ReverseMap();
+
+            // Wing mappings
+            CreateMap<Wing, WingDto>().ReverseMap();
+            CreateMap<Wing, CreateWingDto>().ReverseMap();
+            CreateMap<Wing, UpdateWingDto>().ReverseMap();
+
+            // Announcement mappings
+            CreateMap<Announcement, AnnouncementDto>().ReverseMap();
+            CreateMap<Announcement, CreateAnnouncementDto>().ReverseMap();
+            CreateMap<Announcement, UpdateAnnouncementDto>().ReverseMap();
+
+            // Flat mappings
+            CreateMap<Flat, FlatDto>()
+                .ForMember(dest => dest.Wing, opt => opt.MapFrom(src => src.Wing));
+            CreateMap<CreateFlatDto, Flat>();
+            CreateMap<UpdateFlatDto, Flat>();
+        }
+    }
+}

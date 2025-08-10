@@ -1,0 +1,32 @@
+﻿using FluentValidation;
+using HousingHubBackend.Dtos.Complaint;
+
+namespace HousingHubBackend.Validators
+{
+    public class ComplaintDtoValidator : AbstractValidator<ComplaintDto>
+    {
+        public ComplaintDtoValidator()
+        {
+            RuleFor(x => x.Title).NotEmpty();
+            RuleFor(x => x.Description).NotEmpty();
+        }
+    }
+
+    public class CreateComplaintDtoValidator : AbstractValidator<CreateComplaintDto>
+    {
+        public CreateComplaintDtoValidator()
+        {
+            RuleFor(x => x.Title).NotEmpty();
+            RuleFor(x => x.Description).NotEmpty();
+        }
+    }
+
+    public class UpdateComplaintDtoValidator : AbstractValidator<UpdateComplaintDto>
+    {
+        public UpdateComplaintDtoValidator()
+        {
+            RuleFor(x => x.Title).NotEmpty();
+            RuleFor(x => x.Description).NotEmpty();
+        }
+    }
+}

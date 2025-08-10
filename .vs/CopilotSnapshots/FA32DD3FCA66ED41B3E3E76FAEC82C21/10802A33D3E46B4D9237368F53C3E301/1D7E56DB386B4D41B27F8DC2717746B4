@@ -1,0 +1,52 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using HousingHubBackend.Data;
+using HousingHubBackend.Models;
+using HousingHubBackend.Dtos;
+using AutoMapper;
+using FluentValidation;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace HousingHubBackend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UsersController : ControllerBase
+    {
+        private readonly HousingHubDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<UserAccountDto> _validator;
+        public UsersController(HousingHubDBContext context, IMapper mapper, IValidator<UserAccountDto> validator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _validator = validator;
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var users = _context.UserAccounts.ToList();
+            var dtos = _mapper.Map<IEnumerable<UserAccountDto>>(users);
+            return Ok(dtos);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            var user = _context.UserAccounts.Find(id);
+            if (user == null) return NotFound();
+            return Ok(_mapper.Map<UserAccountDto>(user));
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var user = _context.UserAccounts.Find(id);
+            if (user == null) return NotFound();
+            _context.UserAccounts.Remove(user);
+            _context.SaveChanges();
+            return NoContent();
+        }
+    }
+}

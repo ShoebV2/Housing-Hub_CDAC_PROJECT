@@ -1,0 +1,44 @@
+﻿using System;
+
+namespace HousingHubBackend.Dtos.Visitor
+{
+    public class VisitorDto
+    {
+        public int VisitorId { get; set; }
+        public int? FlatId { get; set; }
+        public string Name { get; set; }
+        public string VisitorType { get; set; }
+        public string Phone { get; set; }
+        public string VehicleNo { get; set; }
+        public string Purpose { get; set; }
+        public DateTime? EntryTime { get; set; }
+        public DateTime? ExitTime { get; set; }
+        public int? RecordedBy { get; set; }
+    }
+
+    public class CreateVisitorDto
+    {
+        public int? FlatId { get; set; }
+        public string Name { get; set; }
+        public string VisitorType { get; set; }
+        public string Phone { get; set; }
+        public string VehicleNo { get; set; }
+        public string Purpose { get; set; }
+        public DateTime? EntryTime { get; set; }
+        public DateTime? ExitTime { get; set; }
+        public int? RecordedBy { get; set; }
+    }
+
+    public class UpdateVisitorDto
+    {
+        public int? FlatId { get; set; }
+        public string Name { get; set; }
+        public string VisitorType { get; set; }
+        public string Phone { get; set; }
+        public string VehicleNo { get; set; }
+        public string Purpose { get; set; }
+        public DateTime? EntryTime { get; set; }
+        public DateTime? ExitTime { get; set; }
+        public int? RecordedBy { get; set; }
+    }
+}

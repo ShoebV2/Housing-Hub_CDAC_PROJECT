@@ -1,0 +1,112 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import DashboardLayout from './components/Layout/DashboardLayout';
+
+// Auth Pages
+import LoginPage from './pages/Auth/LoginPage';
+import RegisterPage from './pages/Auth/RegisterPage';
+import RegisterSocietyPage from './pages/Auth/RegisterSocietyPage';
+
+// Dashboard Pages
+import SuperAdminDashboard from './pages/Dashboard/SuperAdminDashboard';
+import AdminDashboard from './pages/Dashboard/AdminDashboard';
+import ResidentDashboard from './pages/Dashboard/ResidentDashboard';
+import SecurityDashboard from './pages/Dashboard/SecurityDashboard';
+
+// Admin Pages
+import WingsFlatsPage from './pages/Admin/WingsFlatsPage';
+import ResidentsPage from './pages/Admin/ResidentsPage';
+import SecurityStaffPage from './pages/Admin/SecurityStaffPage';
+import AdminsPage from './pages/AdminsPage';
+
+// Other Pages
+import UnauthorizedPage from './pages/UnauthorizedPage';
+import ComplaintsPage from './pages/ComplaintsPage';
+import SocietiesPage from './pages/SocietiesPage';
+import AnnouncementsPage from './pages/AnnouncementsPage';
+import AmenitiesPage from './pages/AmenitiesPage';
+import VisitorsEntryPage from './pages/VisitorsEntryPage';
+import VisitorsLogPage from './pages/VisitorsLogPage';
+
+const App = () => {
+  return (
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/register-society" element={<RegisterSocietyPage />} />
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
+          {/* Protected Routes */}
+          <Route path="/" element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }>
+            {/* Default redirect to dashboard */}
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            
+            {/* Role-based dashboards */}
+            <Route path="dashboard" element={<DashboardRouter />} />
+            
+            {/* Placeholder routes for future pages */}
+            {/* Societies Management for Super Admin */}
+            <Route path="societies" element={<ProtectedRoute requiredRoles={['super_admin']}><SocietiesPage /></ProtectedRoute>} />
+            <Route path="admins" element={<ProtectedRoute requiredRoles={['super_admin']}><AdminsPage /></ProtectedRoute>} />
+            {/* Wings & Flats Management for Admins */}
+            <Route path="wings-flats" element={<ProtectedRoute requiredRoles={['admin']}><WingsFlatsPage /></ProtectedRoute>} />
+            <Route path="residents" element={<ProtectedRoute requiredRoles={['admin']}><ResidentsPage /></ProtectedRoute>} />
+            <Route path="security-staff" element={<ProtectedRoute requiredRoles={['admin']}><SecurityStaffPage /></ProtectedRoute>} />
+            {/*<Route path="residents" element={<div>Residents Page (Coming Soon)</div>} />*/}
+            {/*<Route path="staff" element={<div>Staff Page (Coming Soon)</div>} />*/}
+            <Route path="complaints" element={<ProtectedRoute requiredRoles={['admin','resident']}><ComplaintsPage /></ProtectedRoute>} />
+            <Route path="announcements" element={
+              <ProtectedRoute requiredRoles={['admin', 'resident']}>
+                <AnnouncementsPage />
+              </ProtectedRoute>
+            } />
+            {/*<Route path="maintenance" element={<div>Maintenance Page (Coming Soon)</div>} />*/}
+            <Route path="amenities" element={
+              <ProtectedRoute requiredRoles={['admin', 'resident']}>
+                <AmenitiesPage />
+              </ProtectedRoute>
+            } />
+            {/*<Route path="bills" element={<div>Bills Page (Coming Soon)</div>} />*/}
+                      <Route path="visitors" element={<ProtectedRoute requiredRoles={['security_staff', 'resident', 'admin']}><VisitorsLogPage /></ProtectedRoute>} />
+            <Route path="visitor-entry" element={<ProtectedRoute requiredRoles={['security_staff']}><VisitorsEntryPage /></ProtectedRoute>} />
+            <Route path="visitors-log" element={<ProtectedRoute requiredRoles={['security_staff','resident','admin']}><VisitorsLogPage /></ProtectedRoute>} />
+            {/*<Route path="settings" element={<div>Settings Page (Coming Soon)</div>} />*/}
+          </Route>
+
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
+  );
+};
+
+// Dashboard Router Component
+const DashboardRouter = () => {
+  const { user } = useAuth();
+
+  switch (user?.role) {
+    case 'super_admin':
+      return <SuperAdminDashboard />;
+    case 'admin':
+      return <AdminDashboard />;
+    case 'resident':
+      return <ResidentDashboard />;
+    case 'security_staff':
+      return <SecurityDashboard />;
+    default:
+      return <Navigate to="/unauthorized" replace />;
+  }
+};
+
+export default App;

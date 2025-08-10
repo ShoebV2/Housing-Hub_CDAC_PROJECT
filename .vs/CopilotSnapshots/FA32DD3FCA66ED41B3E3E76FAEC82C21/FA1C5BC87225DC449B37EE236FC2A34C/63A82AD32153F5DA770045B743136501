@@ -1,0 +1,3 @@
+﻿namespace HousingHubBackend.Dtos
+{
+    public class UserAccount

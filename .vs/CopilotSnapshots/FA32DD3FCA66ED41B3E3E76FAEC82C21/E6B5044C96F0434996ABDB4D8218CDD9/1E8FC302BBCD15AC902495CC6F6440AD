@@ -1,0 +1,39 @@
+﻿using HousingHubBackend.Services.Interfaces;
+using HousingHubBackend.Data;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using MailKit.Net.Smtp;
+using MimeKit;
+
+namespace HousingHubBackend.Services.Implementations
+{
+    public class NotificationService : INotificationService
+    {
+        private readonly HousingHubDBContext _context;
+        public NotificationService(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+
+        public void SendNotification(string to, string subject, string message)
+        {
+            // For demonstration, just log the notification. Replace with email/SMS logic as needed.
+            SendEmailAsync(to, subject, message).Wait();
+        }
+
+        private async Task SendEmailAsync(string to, string subject, string body)
+        {
+            var email = new MimeMessage();
+            email.From.Add(MailboxAddress.Parse("skshoebsk2@gmail.com"));
+            email.To.Add(MailboxAddress.Parse(to));
+            email.Subject = subject;
+            email.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = body };
+
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync("skshoebsk2@gmail.com", "isaacwyhlynlnzfg");
+            await smtp.SendAsync(email);
+            await smtp.DisconnectAsync(true);
+        }
+    }
+}

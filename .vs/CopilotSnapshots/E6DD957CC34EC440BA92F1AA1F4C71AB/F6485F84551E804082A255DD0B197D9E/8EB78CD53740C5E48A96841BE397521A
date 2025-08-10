@@ -1,0 +1,15 @@
+﻿using HousingHubBackend.Services.Interfaces;
+using HousingHubBackend.Data;
+
+namespace HousingHubBackend.Services.Implementations
+{
+    public class UserService : IUserService
+    {
+        private readonly HousingHubDBContext _context;
+        public UserService(HousingHubDBContext context)
+        {
+            _context = context;
+        }
+        // Implement business logic here
+    }
+}

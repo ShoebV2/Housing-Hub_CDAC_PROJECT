@@ -1,0 +1,36 @@
+﻿using FluentValidation;
+using HousingHubBackend.Dtos;
+
+namespace HousingHubBackend.Validators
+{
+    public class UserAccountDtoValidator : AbstractValidator<UserAccountDto>
+    {
+        public UserAccountDtoValidator()
+        {
+            RuleFor(x => x.Name)
+                .NotEmpty().WithMessage("Name is required");
+            RuleFor(x => x.Email)
+                .NotEmpty().WithMessage("Email is required").EmailAddress();
+            RuleFor(x => x.Role)
+                .NotEmpty().WithMessage("Role is required");
+        }
+    }
+
+    public class CreateUserAccountDtoValidator : AbstractValidator<CreateUserAccountDto>
+    {
+        public CreateUserAccountDtoValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.Email).NotEmpty().EmailAddress();
+            RuleFor(x => x.Role).NotEmpty();
+            RuleFor(x => x.Password).NotEmpty();
+
+            // Custom rules based on role
+            When(x => x.Role == "resident", () =>
+            {
+                RuleFor(x => x.SocietyId).NotNull().WithMessage("SocietyId is required for resident");
+                RuleFor(x => x.FlatId).NotNull().WithMessage("FlatId is required for resident");
+            });
+            When(x => x.Role == "security_staff", () =>
+            {
+                RuleFor(x => x.SocietyId).NotNull().WithMessage("SocietyId is required

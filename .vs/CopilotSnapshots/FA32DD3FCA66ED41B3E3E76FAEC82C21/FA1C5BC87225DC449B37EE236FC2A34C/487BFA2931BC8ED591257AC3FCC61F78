@@ -1,0 +1,14 @@
+﻿namespace HousingHubBackend.Dtos.User
+{
+    public class UserAccountDto
+    {
+        public int UserId { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string Role { get; set; }
+        public int? SocietyId { get; set; }
+        public int? FlatId { get; set; }
+        public bool? IsVerified { get; set; }
+    }
+}

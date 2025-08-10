@@ -1,0 +1,170 @@
+﻿import React, { useEffect, useState } from 'react';
+import { API_BASE_URL } from '../../config';
+import Button from '../UI/Button';
+import Input from '../UI/Input';
+
+const WingsList = () => {
+  const [wings, setWings] = useState([]);
+  const [societies, setSocieties] = useState([]);
+  const [form, setForm] = useState({ name: '', totalFloors: '', flatsPerFloor: '', societyId: '' });
+  const [editingId, setEditingId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    };
+  };
+
+  const fetchSocieties = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/societies`, {
+        headers: getAuthHeaders()
+      });
+      if (!res.ok) throw new Error('Failed to load societies');
+      const data = await res.json();
+      setSocieties(data);
+    } catch {
+      setSocieties([]);
+    }
+  };
+
+  const fetchWings = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/wings`, {
+        headers: getAuthHeaders()
+      });
+      if (!res.ok) throw new Error('Failed to load wings');
+      const data = await res.json();
+      setWings(data);
+    } catch {
+      setError('Failed to load wings');
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchSocieties();
+    fetchWings();
+  }, []);
+
+  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      const method = editingId ? 'PUT' : 'POST';
+      const url = editingId ? `${API_BASE_URL}/wings/${editingId}` : `${API_BASE_URL}/wings`;
+      const payload = {
+        name: form.name,
+        totalFloors: form.totalFloors ? parseInt(form.totalFloors, 10) : null,
+        flatsPerFloor: form.flatsPerFloor ? parseInt(form.flatsPerFloor, 10) : null,
+        societyId: form.societyId ? parseInt(form.societyId, 10) : null
+      };
+      if (editingId) payload.wingId = editingId;
+      const res = await fetch(url, {
+        method,
+        headers: getAuthHeaders(),
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Failed to save wing');
+      setForm({ name: '', totalFloors: '', flatsPerFloor: '', societyId: '' });
+      setEditingId(null);
+      fetchWings();
+    } catch {
+      setError('Failed to save wing');
+    }
+    setLoading(false);
+  };
+
+  const handleEdit = wing => {
+    setForm({
+      name: wing.name,
+      totalFloors: wing.totalFloors || '',
+      flatsPerFloor: wing.flatsPerFloor || '',
+      societyId: wing.societyId || ''
+    });
+    setEditingId(wing.wingId);
+  };
+
+  const handleDelete = async id => {
+    if (!window.confirm('Delete this wing?')) return;
+    setLoading(true);
+    try {
+      await fetch(`${API_BASE_URL}/wings/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      fetchWings();
+    } catch {
+      setError('Failed to delete wing');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div>
+      <h2 className="text-lg font-semibold mb-4">Wings</h2>
+      <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 mb-4 items-end">
+        <Input name="name" value={form.name} onChange={handleChange} placeholder="Wing Name" required />
+        <Input name="totalFloors" value={form.totalFloors} onChange={handleChange} placeholder="Total Floors" type="number" min="1" required />
+        <Input name="flatsPerFloor" value={form.flatsPerFloor} onChange={handleChange} placeholder="Flats Per Floor" type="number" min="1" required />
+        <select name="societyId" value={form.societyId} onChange={handleChange} className="border rounded px-2 py-1" required>
+          <option value="">Select Society</option>
+          {societies.map(s => (
+            <option key={s.societyId} value={s.societyId}>{s.name}</option>
+          ))}
+        </select>
+        <Button type="submit" variant="primary" disabled={loading}>
+          {editingId ? 'Update' : 'Add'}
+        </Button>
+        {editingId && (
+          <Button type="button" variant="secondary" onClick={() => { setForm({ name: '', totalFloors: '', flatsPerFloor: '', societyId: '' }); setEditingId(null); }}>
+            Cancel
+          </Button>
+        )}
+      </form>
+      {error && <div className="text-red-600 mb-2">{error}</div>}
+      <div className="overflow-x-auto">
+        <table className="min-w-full border text-sm">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="px-4 py-2 border">Wing ID</th>
+              <th className="px-4 py-2 border">Name</th>
+              <th className="px-4 py-2 border">Total Floors</th>
+              <th className="px-4 py-2 border">Flats Per Floor</th>
+              <th className="px-4 py-2 border">Society</th>
+              <th className="px-4 py-2 border">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {wings.map(wing => (
+              <tr key={wing.wingId}>
+                <td className="border px-4 py-2">{wing.wingId}</td>
+                <td className="border px-4 py-2">{wing.name}</td>
+                <td className="border px-4 py-2">{wing.totalFloors}</td>
+                <td className="border px-4 py-2">{wing.flatsPerFloor}</td>
+                <td className="border px-4 py-2">{societies.find(s => s.societyId === wing.societyId)?.name || wing.societyId}</td>
+                <td className="border px-4 py-2 space-x-2">
+                  <Button type="button" variant="secondary" onClick={() => handleEdit(wing)} size="sm">Edit</Button>
+                  <Button type="button" variant="danger" onClick={() => handleDelete(wing.wingId)} size="sm">Delete</Button>
+                </td>
+              </tr>
+            ))}
+            {wings.length === 0 && (
+              <tr><td colSpan={6} className="text-center py-4">No wings found.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default WingsList;
