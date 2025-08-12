@@ -1,0 +1,31 @@
+﻿{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=tcp:housinghub.database.windows.net;Authentication=Active Directory Default;Database=HousingHubDB;"
+  },
+  "Jwt": {
+    "Key": "YourSuperSecretKey1234567890!@#$%^&*()_+12",
+    "Issuer": "https://housing-hub-api.azurewebsites.net/",
+    "Audience": "https://housing-hub-api.azurewebsites.net",
+    "ExpireMinutes": 8760
+  },
+  "Smtp": {
+    "Host": "smtp.gmail.com",
+    "Port": 587,
+    "Username": "skshoebsk2@gmail.com",
+    "Password": "isaacwyhlynlnzfg"
+  },
+  "Azure": {
+    "SignalR": {
+      "Enabled": "true"
+    }
+  },
+  "Frontend": {
+    "BaseUrl": "https://housinghub-ui.azurewebsites.net"
+  }
+}

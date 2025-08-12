@@ -322,10 +322,13 @@ E:\CDAC_Project\HousingHub\Housing-Hub_CDAC_PROJECT\HousingHubBackend\obj\Debug\
 E:\CDAC_Project\HousingHub\Housing-Hub_CDAC_PROJECT\HousingHubBackend\obj\Debug\net8.0\staticwebassets.build.json.cache
 E:\CDAC_Project\HousingHub\Housing-Hub_CDAC_PROJECT\HousingHubBackend\obj\Debug\net8.0\staticwebassets.development.json
 E:\CDAC_Project\HousingHub\Housing-Hub_CDAC_PROJECT\HousingHubBackend\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-E:\CDAC_Project\HousingHub\Housing-Hub_CDAC_PROJECT\HousingHubBackend\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 E:\CDAC_Project\HousingHub\Housing-Hub_CDAC_PROJECT\HousingHubBackend\obj\Debug\net8.0\HousingH.1379193F.Up2Date
 E:\CDAC_Project\HousingHub\Housing-Hub_CDAC_PROJECT\HousingHubBackend\obj\Debug\net8.0\HousingHubBackend.dll
 E:\CDAC_Project\HousingHub\Housing-Hub_CDAC_PROJECT\HousingHubBackend\obj\Debug\net8.0\refint\HousingHubBackend.dll
 E:\CDAC_Project\HousingHub\Housing-Hub_CDAC_PROJECT\HousingHubBackend\obj\Debug\net8.0\HousingHubBackend.pdb
 E:\CDAC_Project\HousingHub\Housing-Hub_CDAC_PROJECT\HousingHubBackend\obj\Debug\net8.0\HousingHubBackend.genruntimeconfig.cache
 E:\CDAC_Project\HousingHub\Housing-Hub_CDAC_PROJECT\HousingHubBackend\obj\Debug\net8.0\ref\HousingHubBackend.dll
+E:\CDAC_Project\HousingHub\Housing-Hub_CDAC_PROJECT\HousingHubBackend\bin\Debug\net8.0\Microsoft.Azure.SignalR.Common.dll
+E:\CDAC_Project\HousingHub\Housing-Hub_CDAC_PROJECT\HousingHubBackend\bin\Debug\net8.0\Microsoft.Azure.SignalR.dll
+E:\CDAC_Project\HousingHub\Housing-Hub_CDAC_PROJECT\HousingHubBackend\bin\Debug\net8.0\Microsoft.Azure.SignalR.Protocols.dll
+E:\CDAC_Project\HousingHub\Housing-Hub_CDAC_PROJECT\HousingHubBackend\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

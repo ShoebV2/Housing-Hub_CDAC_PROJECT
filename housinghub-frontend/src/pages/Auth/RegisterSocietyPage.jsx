@@ -1,0 +1,376 @@
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Building2, User, Mail, Phone, Lock, MapPin } from 'lucide-react';
+import Input from '../../components/UI/Input';
+import Button from '../../components/UI/Button';
+import { API_BASE_URL } from '../../config';
+
+const RegisterSocietyPage = () => {
+  const [formData, setFormData] = useState({
+    // Society Details
+    societyName: '',
+    address: '',
+    city: '',
+    state: '',
+    country: '', // <-- add country
+    pincode: '',
+    // Admin Details
+    adminName: '',
+    adminEmail: '',
+    adminPhone: '',
+    adminPassword: '',
+    confirmPassword: ''
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [phoneError, setPhoneError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [pincodeError, setPincodeError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess(false);
+    setLoading(true);
+    if (formData.adminPassword !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+    if (!/^\d{10}$/.test(formData.adminPhone)) {
+      setError('Phone number must be exactly 10 digits');
+      setLoading(false);
+      return;
+    }
+    if (!formData.adminEmail.includes('@') || !formData.adminEmail.endsWith('.com')) {
+      setError('Email must contain @ and end with .com');
+      setLoading(false);
+      return;
+    }
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).+$/;
+    if (!passwordPattern.test(formData.adminPassword)) {
+      setError('Password must have 1 uppercase, 1 lowercase, 1 number, 1 special character');
+      setLoading(false);
+      return;
+    }
+    if (!/^\d{1,10}$/.test(formData.pincode)) {
+      setError('Pincode must be numeric and up to 10 digits');
+      setLoading(false);
+      return;
+    }
+    // 1. Register society first
+    const societyPayload = {
+      name: formData.societyName,
+      address: formData.address,
+      city: formData.city,
+      state: formData.state,
+      country: formData.country, // <-- add country
+      pincode: formData.pincode ? parseInt(formData.pincode, 10) : null
+    };
+    try {
+      const societyRes = await fetch(`${API_BASE_URL}/societies`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(societyPayload)
+      });
+      if (!societyRes.ok) {
+        let errMsg = 'Society registration failed.';
+        try {
+          const errData = await societyRes.json();
+          if (errData?.Message) errMsg = errData.Message;
+          if (errData?.Errors) {
+            errMsg += ' ' + Object.values(errData.Errors).flat().join(' ');
+          }
+        } catch {}
+        setError(errMsg);
+        setLoading(false);
+        return;
+      }
+      const societyData = await societyRes.json();
+      const societyId = societyData.societyId || societyData.SocietyId;
+      // 2. Register admin user with new societyId (FlatId is optional for admin)
+      const adminPayload = {
+        name: formData.adminName,
+        email: formData.adminEmail,
+        phone: formData.adminPhone,
+        password: formData.adminPassword,
+        role: 'admin',
+        societyId: societyId // required for admin
+      };
+      // Only add flatId if it's a valid number (never as empty string or undefined)
+      if (formData.adminFlatId && !isNaN(Number(formData.adminFlatId))) {
+        adminPayload.flatId = Number(formData.adminFlatId);
+      }
+      const adminRes = await fetch(`${API_BASE_URL}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(adminPayload)
+      });
+      if (adminRes.ok) {
+        setSuccess(true);
+        setError('');
+        // Show a success message for both society and admin registration
+        alert('Society and admin registered successfully!');
+      } else {
+        let errMsg = 'Admin registration failed.';
+        try {
+          const errData = await adminRes.json();
+          if (errData?.Message) errMsg = errData.Message;
+          if (errData?.Errors) {
+            errMsg += ' ' + Object.values(errData.Errors).flat().join(' ');
+          }
+        } catch {}
+        setError(errMsg);
+      }
+    } catch (err) {
+      setError('Registration failed. Please try again.');
+    }
+    setLoading(false);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'adminPhone') {
+      if (!/^\d{0,10}$/.test(value)) return;
+      setPhoneError(value.length === 10 ? '' : 'Phone number must be exactly 10 digits');
+    }
+    if (name === 'adminEmail') {
+      setEmailError(value.includes('@') && value.endsWith('.com') ? '' : 'Email must contain @ and end with .com');
+    }
+    if (name === 'adminPassword') {
+      const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).+$/;
+      setPasswordError(passwordPattern.test(value)
+        ? ''
+        : 'Password must have 1 uppercase, 1 lowercase, 1 number, 1 special character');
+    }
+    if (name === 'pincode') {
+      if (!/^\d{0,10}$/.test(value)) return;
+      setPincodeError(value.length > 0 && value.length <= 10 ? '' : 'Pincode must be numeric and up to 10 digits');
+    }
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-violet-100 flex items-center justify-center p-4">
+      <div className="max-w-2xl w-full bg-white rounded-xl shadow-lg p-8">
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center mb-4">
+            <Building2 className="h-12 w-12 text-purple-600" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900">Register New Society</h2>
+          <p className="text-gray-600 mt-2">Create your society account with admin details</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+              Society registered successfully!
+            </div>
+          )}
+          {/* Society Information */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Society Information</h3>
+            <div className="space-y-4">
+              <div className="relative flex flex-col">
+                <label htmlFor="society-societyName" className="font-semibold mb-1">Society Name</label>
+                <Building2 className="absolute left-3 top-10 h-4 w-4 text-gray-400" />
+                <Input
+                  id="society-societyName"
+                  name="societyName"
+                  type="text"
+                  placeholder="Society Name"
+                  value={formData.societyName}
+                  onChange={handleChange}
+                  className="pl-10"
+                  required
+                />
+              </div>
+
+              <div className="relative flex flex-col">
+                <label htmlFor="society-address" className="font-semibold mb-1">Full Address</label>
+                <MapPin className="absolute left-3 top-10 h-4 w-4 text-gray-400" />
+                <Input
+                  id="society-address"
+                  name="address"
+                  type="text"
+                  placeholder="Full Address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  className="pl-10"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col">
+                  <label htmlFor="society-city" className="font-semibold mb-1">City</label>
+                  <Input
+                    id="society-city"
+                    name="city"
+                    type="text"
+                    placeholder="City"
+                    value={formData.city}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label htmlFor="society-state" className="font-semibold mb-1">State</label>
+                  <Input
+                    id="society-state"
+                    name="state"
+                    type="text"
+                    placeholder="State"
+                    value={formData.state}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col">
+                <label htmlFor="society-country" className="font-semibold mb-1">Country</label>
+                <Input
+                  id="society-country"
+                  name="country"
+                  type="text"
+                  placeholder="Country"
+                  value={formData.country}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label htmlFor="society-pincode" className="font-semibold mb-1">Pincode</label>
+                <Input
+                  id="society-pincode"
+                  name="pincode"
+                  type="text"
+                  placeholder="Pincode"
+                  value={formData.pincode}
+                  onChange={handleChange}
+                  required
+                  maxLength={10}
+                  pattern="\d{1,10}"
+                />
+                {pincodeError && <span className="text-red-600 text-xs mt-1">{pincodeError}</span>}
+              </div>
+            </div>
+          </div>
+
+          {/* Admin Information */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Admin Details</h3>
+            <div className="space-y-4">
+              <div className="relative flex flex-col">
+                <label htmlFor="society-adminName" className="font-semibold mb-1">Admin Full Name</label>
+                <User className="absolute left-3 top-10 h-4 w-4 text-gray-400" />
+                <Input
+                  id="society-adminName"
+                  name="adminName"
+                  type="text"
+                  placeholder="Admin Full Name"
+                  value={formData.adminName}
+                  onChange={handleChange}
+                  className="pl-10"
+                  required
+                />
+              </div>
+
+              <div className="relative flex flex-col">
+                <label htmlFor="society-adminEmail" className="font-semibold mb-1">Admin Email</label>
+                <Mail className="absolute left-3 top-10 h-4 w-4 text-gray-400" />
+                <Input
+                  id="society-adminEmail"
+                  name="adminEmail"
+                  type="email"
+                  placeholder="Admin Email"
+                  value={formData.adminEmail}
+                  onChange={handleChange}
+                  className="pl-10"
+                  required
+                />
+                {emailError && <span className="text-red-600 text-xs mt-1">{emailError}</span>}
+              </div>
+
+              <div className="relative flex flex-col">
+                <label htmlFor="society-adminPhone" className="font-semibold mb-1">Admin Phone</label>
+                <Phone className="absolute left-3 top-10 h-4 w-4 text-gray-400" />
+                <Input
+                  id="society-adminPhone"
+                  name="adminPhone"
+                  type="tel"
+                  placeholder="Admin Phone"
+                  value={formData.adminPhone}
+                  onChange={handleChange}
+                  className="pl-10"
+                  required
+                  maxLength={10}
+                  pattern="\d{10}"
+                />
+                {phoneError && <span className="text-red-600 text-xs mt-1">{phoneError}</span>}
+              </div>
+
+              <div className="relative flex flex-col">
+                <label htmlFor="society-adminPassword" className="font-semibold mb-1">Admin Password</label>
+                <Lock className="absolute left-3 top-10 h-4 w-4 text-gray-400" />
+                <Input
+                  id="society-adminPassword"
+                  name="adminPassword"
+                  type="password"
+                  placeholder="Admin Password"
+                  value={formData.adminPassword}
+                  onChange={handleChange}
+                  className="pl-10"
+                  required
+                />
+                {passwordError && <span className="text-red-600 text-xs mt-1">{passwordError}</span>}
+              </div>
+
+              <div className="relative flex flex-col">
+                <label htmlFor="society-confirmPassword" className="font-semibold mb-1">Confirm Password</label>
+                <Lock className="absolute left-3 top-10 h-4 w-4 text-gray-400" />
+                <Input
+                  id="society-confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  placeholder="Confirm Password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="pl-10"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          <Button type="submit" variant="primary" className="w-full" disabled={loading}>
+            {loading ? 'Registering...' : 'Register Society'}
+          </Button>
+        </form>
+
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-600">
+            Already have an account?{' '}
+            <Link to="/login" className="text-purple-600 hover:text-purple-700 font-medium">
+              Sign in here
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default RegisterSocietyPage;

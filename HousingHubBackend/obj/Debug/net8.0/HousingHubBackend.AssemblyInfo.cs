@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HousingHubBackend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+87e3eba87cffe7215f58cfa567aae7fbb767e804")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d09595beb85521982226705d88de7c96fad4133e")]
 [assembly: System.Reflection.AssemblyProductAttribute("HousingHubBackend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HousingHubBackend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

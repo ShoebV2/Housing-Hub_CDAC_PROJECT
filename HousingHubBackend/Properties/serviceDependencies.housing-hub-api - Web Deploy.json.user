@@ -1,0 +1,69 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "restored": true,
+      "restoreTime": "2025-08-11T18:21:59.3690309Z"
+    },
+    "signalr1": {
+      "restored": true,
+      "restoreTime": "2025-08-11T07:21:42.2792468Z"
+    }
+  },
+  "parameters": {
+    "housing-hub-api.resourceGroupName": {
+      "Name": "housing-hub-api.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "HousingHub"
+    },
+    "mssql1.subscriptionId": {
+      "Name": "mssql1.subscriptionId",
+      "Type": "subscription",
+      "Value": "40c83f5e-bcb0-4950-aef3-caa2b4ec26c5"
+    },
+    "mssql1.serviceConnectorResourceGroupName": {
+      "Name": "mssql1.serviceConnectorResourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "HousingHub"
+    },
+    "signalr1.resourceGroupName": {
+      "Name": "signalr1.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "HousingHub"
+    },
+    "housing-hub-api.resourceName": {
+      "Name": "housing-hub-api.resourceName",
+      "Type": null,
+      "Value": "housing-hub-api"
+    },
+    "housing-hub-api.resourceGroupLocation": {
+      "Name": "housing-hub-api.resourceGroupLocation",
+      "Type": null,
+      "Value": "centralindia"
+    },
+    "housing-hub-api.subscriptionId": {
+      "Name": "housing-hub-api.subscriptionId",
+      "Type": "subscription",
+      "Value": "40c83f5e-bcb0-4950-aef3-caa2b4ec26c5"
+    },
+    "signalr1.resourceGroupLocation": {
+      "Name": "signalr1.resourceGroupLocation",
+      "Type": "location",
+      "Value": "centralindia"
+    },
+    "signalr1.subscriptionId": {
+      "Name": "signalr1.subscriptionId",
+      "Type": "subscription",
+      "Value": "40c83f5e-bcb0-4950-aef3-caa2b4ec26c5"
+    },
+    "mssql1.resourceGroupName": {
+      "Name": "mssql1.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "HousingHub"
+    },
+    "signalr1.serviceConnectorResourceGroupName": {
+      "Name": "signalr1.serviceConnectorResourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "HousingHub"
+    }
+  }
+}

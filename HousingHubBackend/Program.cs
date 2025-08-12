@@ -14,6 +14,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using HousingHubBackend.Middleware;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Azure.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -157,31 +158,37 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddEndpointsApiExplorer();
 
-// Add SignalR
-builder.Services.AddSignalR();
-
 // Add CORS policy
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
         policy => policy
-            .WithOrigins("http://localhost:5173")
+            .WithOrigins(
+                "https://housinghub-ui.azurewebsites.net", // NEW: deployed frontend domain
+                "http://localhost:5173",
+                "https://housing-hub-api.azurewebsites.net" // Allow API domain for testing Swagger, etc.
+            )
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
     );
 });
+builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration["Azure:SignalR:ConnectionString"]!);
 
 var app = builder.Build();
 
-// Use CORS policy
+// Use CORS policy FIRST
 app.UseCors("AllowFrontend");
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "HousingHub API V1");
+        c.RoutePrefix = string.Empty; // Serve Swagger UI at application root
+    });
 }
 
 app.UseMiddleware<ErrorHandlingMiddleware>(); // Add this line for central error handling
