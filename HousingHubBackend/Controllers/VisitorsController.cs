@@ -16,7 +16,7 @@ namespace HousingHubBackend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize] // All endpoints require authentication
     public class VisitorsController : ControllerBase
     {
         private readonly HousingHubDBContext _context;
@@ -42,10 +42,12 @@ namespace HousingHubBackend.Controllers
             _notificationService = notificationService;
         }
 
+        // GET: api/visitors
         [HttpGet]
         [Authorize(Roles = "super_admin,admin,security_staff,resident")]
         public IActionResult GetAll()
         {
+            // Get current user's role and ID from JWT claims
             var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
             var userIdStr = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             int? userId = null;
@@ -53,30 +55,42 @@ namespace HousingHubBackend.Controllers
 
             var visitors = _context.Visitors.ToList();
 
+            // Filter results based on role
             if (userRole == "security_staff" && userId != null)
             {
-                // Find security staff's societyId
+                // Security staff sees visitors for their society only
                 var staff = _context.UserAccounts.FirstOrDefault(u => u.UserId == userId);
                 if (staff != null && staff.SocietyId != null)
                 {
-                    // Get all flatIds in the staff's society via Flat -> Wing -> Society
-                    var societyWingIds = _context.Wings.Where(w => w.SocietyId == staff.SocietyId).Select(w => w.WingId).ToList();
-                    var societyFlatIds = _context.Flats.Where(f => f.WingId != null && societyWingIds.Contains(f.WingId.Value)).Select(f => f.FlatId).ToList();
+                    var societyWingIds = _context.Wings
+                        .Where(w => w.SocietyId == staff.SocietyId)
+                        .Select(w => w.WingId).ToList();
+
+                    var societyFlatIds = _context.Flats
+                        .Where(f => f.WingId != null && societyWingIds.Contains(f.WingId.Value))
+                        .Select(f => f.FlatId).ToList();
+
                     visitors = visitors.Where(v => v.FlatId != null && societyFlatIds.Contains(v.FlatId.Value)).ToList();
                 }
                 else
                 {
-                    visitors = new List<Visitor>();
+                    visitors = new List<Visitor>(); // No matching society
                 }
             }
             else if (userRole == "admin" && userId != null)
             {
-                // Only show visitors for admin's society using Flat -> Wing -> Society
+                // Admin sees visitors for their entire society
                 var admin = _context.UserAccounts.FirstOrDefault(u => u.UserId == userId);
                 if (admin != null && admin.SocietyId != null)
                 {
-                    var societyWingIds = _context.Wings.Where(w => w.SocietyId == admin.SocietyId).Select(w => w.WingId).ToList();
-                    var societyFlatIds = _context.Flats.Where(f => f.WingId != null && societyWingIds.Contains(f.WingId.Value)).Select(f => f.FlatId).ToList();
+                    var societyWingIds = _context.Wings
+                        .Where(w => w.SocietyId == admin.SocietyId)
+                        .Select(w => w.WingId).ToList();
+
+                    var societyFlatIds = _context.Flats
+                        .Where(f => f.WingId != null && societyWingIds.Contains(f.WingId.Value))
+                        .Select(f => f.FlatId).ToList();
+
                     visitors = visitors.Where(v => v.FlatId != null && societyFlatIds.Contains(v.FlatId.Value)).ToList();
                 }
                 else
@@ -86,7 +100,7 @@ namespace HousingHubBackend.Controllers
             }
             else if (userRole == "resident" && userId != null)
             {
-                // Only show visitors for resident's flat(s)
+                // Resident sees only their own flat's visitors
                 var resident = _context.UserAccounts.FirstOrDefault(u => u.UserId == userId);
                 var residentFlatIds = new List<int>();
                 if (resident != null && resident.FlatId != null)
@@ -96,16 +110,22 @@ namespace HousingHubBackend.Controllers
                 visitors = visitors.Where(v => v.FlatId != null && residentFlatIds.Contains(v.FlatId.Value)).ToList();
             }
 
+            // Map RecordedBy user names
             var userIds = visitors.Select(v => v.RecordedBy).Where(id => id != null).Distinct().ToList();
-            var users = _context.UserAccounts.Where(u => userIds.Contains(u.UserId)).ToDictionary(u => u.UserId, u => u.Name);
+            var users = _context.UserAccounts.Where(u => userIds.Contains(u.UserId))
+                        .ToDictionary(u => u.UserId, u => u.Name);
+
             var dtos = visitors.Select(v => {
                 var dto = _mapper.Map<VisitorDto>(v);
-                dto.RecordedByName = v.RecordedBy != null && users.ContainsKey(v.RecordedBy.Value) ? users[v.RecordedBy.Value] : null;
+                dto.RecordedByName = v.RecordedBy != null && users.ContainsKey(v.RecordedBy.Value) 
+                                    ? users[v.RecordedBy.Value] : null;
                 return dto;
             }).ToList();
+
             return Ok(dtos);
         }
 
+        // GET: api/visitors/{id}
         [HttpGet("{id}")]
         [Authorize(Roles = "super_admin,admin,security_staff,resident")]
         public IActionResult Get(int id)
@@ -115,6 +135,7 @@ namespace HousingHubBackend.Controllers
             return Ok(_mapper.Map<VisitorDto>(visitor));
         }
 
+        // POST: api/visitors
         [HttpPost]
         [Authorize(Roles = "super_admin,admin,security_staff")]
         public IActionResult Create([FromBody] CreateVisitorDto dto)
@@ -123,13 +144,17 @@ namespace HousingHubBackend.Controllers
             _context.Visitors.Add(visitor);
             _context.SaveChanges();
 
-            // Notify resident (if FlatId is available)
+            // Send real-time and email notifications to resident
             if (visitor.FlatId != null)
             {
                 var user = _context.UserAccounts.FirstOrDefault(u => u.FlatId == visitor.FlatId);
                 if (user != null)
                 {
-                    _hubContext.Clients.Group($"flat_{visitor.FlatId}").SendAsync("ReceiveNotification", $"A new visitor has been added for your flat. Visitor: {visitor.Name}");
+                    // Send WebSocket/SignalR notification
+                    _hubContext.Clients.Group($"flat_{visitor.FlatId}")
+                        .SendAsync("ReceiveNotification", $"A new visitor has been added for your flat. Visitor: {visitor.Name}");
+
+                    // Send Email notification
                     if (!string.IsNullOrEmpty(user.Email))
                     {
                         _notificationService.SendNotification(
@@ -143,26 +168,33 @@ namespace HousingHubBackend.Controllers
             return CreatedAtAction(nameof(Get), new { id = visitor.VisitorId }, _mapper.Map<VisitorDto>(visitor));
         }
 
+        // PUT: api/visitors/{id}
         [HttpPut("{id}")]
         [Authorize(Roles = "super_admin,admin,security_staff")]
         public IActionResult Update(int id, [FromBody] UpdateVisitorDto dto)
         {
             var existing = _context.Visitors.Find(id);
             if (existing == null) return NotFound();
+
             _mapper.Map(dto, existing);
             _context.SaveChanges();
             return NoContent();
         }
 
+        // PUT: api/visitors/exit/{id}
         [HttpPut("exit/{id}")]
         [Authorize(Roles = "super_admin,admin,security_staff")]
         public IActionResult MarkExit(int id)
         {
             var visitor = _context.Visitors.Find(id);
             if (visitor == null) return NotFound();
-            if (visitor.ExitTime != null) return BadRequest("Visitor already exited.");
+
+            if (visitor.ExitTime != null) 
+                return BadRequest("Visitor already exited.");
+
             visitor.ExitTime = DateTime.UtcNow;
             _context.SaveChanges();
+
             return Ok(_mapper.Map<VisitorDto>(visitor));
         }
     }
